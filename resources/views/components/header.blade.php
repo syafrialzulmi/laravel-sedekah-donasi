@@ -45,7 +45,19 @@
                     </div>
                     <div class="flex-grow-1">
                     <span class="fw-semibold d-block">{{ auth()->user()->name }}</span>
-                    {{-- <small class="text-muted">{{ auth()->user()->role->name }}</small> --}}
+                    <small class="text-muted">
+                        {{-- {{ auth()->user()->role->name }} --}}
+                        @php $roles = auth()->user()->getRoleNames(); @endphp
+                        @if($roles && $roles->count())
+                        <div class="d-flex flex-wrap gap-1">
+                            @foreach($roles as $r)
+                            <span class="badge rounded-pill bg-primary-subtle text-primary border">{{ $r }}</span>
+                            @endforeach
+                        </div>
+                        @else
+                        <span class="text-muted">—</span>
+                        @endif
+                    </small>
                     </div>
                 </div>
                 </a>

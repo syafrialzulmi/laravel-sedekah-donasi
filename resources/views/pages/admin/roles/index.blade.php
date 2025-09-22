@@ -52,49 +52,30 @@
                         <tbody id="roleTableBody">
                         @foreach ($roles as $key => $role)
                             <tr class="role-row">
-                            <td>{{ ++$i }}</td>
-                            <td class="fw-semibold">{{ $role->name }}</td>
-                            <td>
-                                <div class="btn-group">
-                                <a class="btn btn-outline-secondary btn-sm" href="{{ route('roles.show',$role->id) }}">
-                                    <i class="fa-solid fa-list"></i>
-                                </a>
-                                @can('role-edit')
-                                    <a class="btn btn-outline-primary btn-sm" href="{{ route('roles.edit',$role->id) }}">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                    </a>
-                                @endcan
-                                <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span class="visually-hidden">Toggle Dropdown</span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                    <a class="dropdown-item" href="{{ route('roles.show',$role->id) }}">
-                                        <i class="fa-solid fa-list me-2"></i>Show
-                                    </a>
-                                    </li>
-                                    @can('role-edit')
-                                    <li>
-                                        <a class="dropdown-item" href="{{ route('roles.edit',$role->id) }}">
-                                        <i class="fa-solid fa-pen-to-square me-2"></i>Edit
+                                <td>{{ ++$i }}</td>
+                                <td class="fw-semibold">{{ $role->name }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a class="btn btn-outline-secondary btn-sm" href="{{ route('roles.show',$role->id) }}">
+                                            <i class="fa-solid fa-list"></i>
                                         </a>
-                                    </li>
-                                    @endcan
-                                    @can('role-delete')
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form method="POST" action="{{ route('roles.destroy', $role->id) }}" onsubmit="return confirm('Hapus role ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="fa-solid fa-trash me-2"></i>Delete
-                                        </button>
-                                        </form>
-                                    </li>
-                                    @endcan
-                                </ul>
-                                </div>
-                            </td>
+                                        @can('role-edit')
+                                            <a class="btn btn-outline-primary btn-sm" href="{{ route('roles.edit',$role->id) }}">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                            </a>
+                                        @endcan
+                                        @can('role-delete')
+                                            <button type="button"
+                                                    class="btn btn-outline-danger btn-sm btn-open-delete"
+                                                    data-url="{{ route('roles.destroy',$role->id) }}"
+                                                    data-name="{{ $role->name }}"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#confirmDeleteModal">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        @endcan
+                                    </div>
+                                </td>
                             </tr>
                         @endforeach
                         </tbody>
@@ -133,32 +114,69 @@
     </div>
 </div>
 
+{{-- Modal Konfirmasi Delete --}}
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="POST" id="deleteForm" class="modal-content">
+      @csrf
+      @method('DELETE')
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmDeleteLabel">Hapus Role</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-2">Anda yakin ingin menghapus role berikut?</p>
+        <div class="alert alert-warning d-flex align-items-center gap-2 mb-0">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <strong id="deleteItemName">—</strong>
+        </div>
+        <small class="text-muted d-block mt-2">Tindakan ini tidak dapat dibatalkan.</small>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-danger">
+          <i class="fa-solid fa-trash me-1"></i> Hapus
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
 @push('scripts')
 <script>
-  $(function () {
-    // Client-side search: filter berdasarkan teks di baris
-    const $search = $('#roleSearch');
-    const $rows   = $('#roleTableBody .role-row');
-
-    function filterRows() {
-      const q = ($search.val() || '').toLowerCase().trim();
-      if (!q) { $rows.show(); return; }
-      $rows.each(function() {
-        const txt = $(this).text().toLowerCase();
-        $(this).toggle(txt.indexOf(q) !== -1);
-      });
-    }
-    $search.on('input', filterRows);
-
-    // Page size: reload dengan query ?ps=
-    $('#pageSize').on('change', function() {
-      const ps  = $(this).val();
-      const url = new URL(window.location.href);
-      url.searchParams.set('ps', ps);
-      url.searchParams.delete('page'); // reset ke halaman 1
-      window.location.href = url.toString();
+    $(function () {
+        $(document).on('click', '.btn-open-delete', function () {
+        const url  = $(this).data('url');
+        const name = $(this).data('name');
+        $('#deleteForm').attr('action', url);
+        $('#deleteItemName').text(name);
+        });
     });
-  });
+    $(function () {
+        // Client-side search: filter berdasarkan teks di baris
+        const $search = $('#roleSearch');
+        const $rows   = $('#roleTableBody .role-row');
+
+        function filterRows() {
+        const q = ($search.val() || '').toLowerCase().trim();
+        if (!q) { $rows.show(); return; }
+        $rows.each(function() {
+            const txt = $(this).text().toLowerCase();
+            $(this).toggle(txt.indexOf(q) !== -1);
+        });
+        }
+        $search.on('input', filterRows);
+
+        // Page size: reload dengan query ?ps=
+        $('#pageSize').on('change', function() {
+        const ps  = $(this).val();
+        const url = new URL(window.location.href);
+        url.searchParams.set('ps', ps);
+        url.searchParams.delete('page'); // reset ke halaman 1
+        window.location.href = url.toString();
+        });
+    });
 </script>
 @endpush
 
