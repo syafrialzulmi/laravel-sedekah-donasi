@@ -30,7 +30,7 @@ class ProductController extends Controller
     {
         $products = Product::latest()->paginate(5);
 
-        return view('pages.admin.products.index',compact('products'))
+        return view('pages.admin.product.index',compact('products'))
             ->with('i', (request()->input('page', 1) - 1) * 5);
     }
 
@@ -41,7 +41,7 @@ class ProductController extends Controller
      */
     public function create(): View
     {
-        return view('pages.admin.products.create');
+        return view('pages.admin.product.create');
     }
 
     /**
@@ -71,7 +71,7 @@ class ProductController extends Controller
      */
     public function show(Product $product): View
     {
-        return view('pages.admin.products.show',compact('product'));
+        return view('pages.admin.product.show',compact('product'));
     }
 
     /**
@@ -82,7 +82,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product): View
     {
-        return view('pages.admin.products.edit',compact('product'));
+        return view('pages.admin.product.edit',compact('product'));
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Http\Controllers\DasborController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\MenuController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,4 +28,5 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('/admin/roles', RoleController::class);
     Route::resource('/admin/users', UserController::class);
     Route::resource('/admin/products', ProductController::class);
+    Route::resource('/admin/menus', MenuController::class);
 });

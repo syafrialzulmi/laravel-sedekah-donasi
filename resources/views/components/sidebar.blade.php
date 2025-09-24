@@ -123,6 +123,12 @@
         <!-- Misc -->
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Manage</span></li>
         <li class="menu-item">
+            <a href="{{ route('menus.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-support"></i>
+            <div data-i18n="User">Menu</div>
+            </a>
+        </li>
+        <li class="menu-item">
             <a href="{{ route('users.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-support"></i>
             <div data-i18n="User">Users</div>

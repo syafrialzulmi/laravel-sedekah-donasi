@@ -26,7 +26,7 @@ class UserController extends Controller
     {
         $data = User::latest()->paginate(5);
 
-        return view('pages.admin.users.index',compact('data'))
+        return view('pages.admin.user.index',compact('data'))
             ->with('i', ($request->input('page', 1) - 1) * 5);
     }
 
@@ -34,7 +34,7 @@ class UserController extends Controller
     {
         $roles = Role::pluck('name','name')->all();
 
-        return view('pages.admin.users.create',compact('roles'));
+        return view('pages.admin.user.create',compact('roles'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -60,7 +60,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        return view('pages.admin.users.show',compact('user'));
+        return view('pages.admin.user.show',compact('user'));
     }
 
     public function edit($id): View
@@ -69,7 +69,7 @@ class UserController extends Controller
         $roles = Role::pluck('name','name')->all();
         $userRole = $user->roles->pluck('name','name')->all();
 
-        return view('pages.admin.users.edit',compact('user','roles','userRole'));
+        return view('pages.admin.user.edit',compact('user','roles','userRole'));
     }
 
     public function update(Request $request, $id): RedirectResponse

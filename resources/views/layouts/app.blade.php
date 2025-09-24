@@ -72,6 +72,11 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src={{ asset('assets/js/config.js') }}></script>
 
+     {{-- Select2 CSS (boleh pindah ke layout kalau dipakai global) --}}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    {{-- (Opsional) Tema Bootstrap-5 untuk Select2 --}}
+    <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.6.2/dist/select2-bootstrap4.min.css" rel="stylesheet" />
+
     <style>
     .bd-callout {
         padding: 1.25rem;
@@ -168,7 +173,9 @@
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
-    <script src={{ asset('assets/vendor/libs/jquery/jquery.js') }}></script>
+    {{-- jQuery (dibutuhkan oleh Select2) --}}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    {{-- <script src={{ asset('assets/vendor/libs/jquery/jquery.js') }}></script> --}}
     <script src={{ asset('assets/vendor/libs/popper/popper.js') }}></script>
     <script src={{ asset('assets/vendor/js/bootstrap.js') }}></script>
     <script src={{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}></script>
@@ -204,6 +211,9 @@
     <!-- jQuery UI -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+    {{-- Select2 JS --}}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.full.min.js"></script>
 
     <script>
         setTimeout(() => {
