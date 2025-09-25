@@ -128,15 +128,20 @@ class MenuController extends Controller
      */
     public function edit(Menu $menu)
     {
-        $icons = config('app.menu_icons', [
-            'fa-solid fa-house' => 'Home',
-            'fa-solid fa-gear'  => 'Settings',
-            'fa-solid fa-user'  => 'User',
+        $icons = config('app.menu_icons',[
+            'fa fa-home' => 'Home',
+            'fa fa-user' => 'User',
+            'fa fa-cog' => 'Settings',
+            'fa fa-list' => 'List',
+            'fa fa-chart-bar' => 'Chart',
+            'fa fa-envelope' => 'Envelope',
+            'fa fa-bell' => 'Notification',
+            'fa fa-lock' => 'Lock',
         ]);
 
         $menus = Menu::where('id', '!=', $menu->id)
                  ->orderBy('title')
-                 ->get(['id','title']);
+                 ->get(['id','title','icon']);
 
         return view('pages.admin.menu.edit', compact('menu','icons','menus'));
     }

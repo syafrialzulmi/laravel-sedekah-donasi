@@ -48,7 +48,6 @@
                             <th >Parent</th>
                             <th >Route</th>
                             <th>Icon</th>
-                            <th >Permission Name</th>
                             <th style="width:180px;">Action</th>
                         </tr>
                         </thead>
@@ -67,7 +66,6 @@
                                         <i class="{{ $menu->icon }}"></i>
                                     </div>
                                 </td>
-                                <td>{{ $menu->permission_name }}</td>
                                 <td>
                                     <div class="btn-group">
                                         <a class="btn btn-outline-secondary btn-sm" href="{{ route('menus.show',$menu->id) }}">

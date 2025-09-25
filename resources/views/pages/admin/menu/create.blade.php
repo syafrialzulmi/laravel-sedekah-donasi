@@ -77,7 +77,10 @@
                         <select class="form-select @error('parent_id') is-invalid @enderror" id="parent_id" name="parent_id">
                             <option value="">-- Tidak ada (Root) --</option>
                             @foreach($menus as $menu)
-                                <option value="{{ $menu->id }}" {{ old('parent_id') == $menu->id ? 'selected' : '' }}>
+                                <option
+                                    value="{{ $menu->id }}"
+                                    data-icon="{{ $menu->icon ?? '' }}"
+                                    {{ old('parent_id') == $menu->id ? 'selected' : '' }}>
                                     {{ $menu->title }}
                                 </option>
                             @endforeach
@@ -119,40 +122,120 @@
 </div>
 
 @push('styles')
+<style>
+/* === Umum (ikon di item & value) === */
+.select2-results__option .fa,
+.select2-selection__rendered .fa {
+  margin-right: .5rem;
+  width: 1.25rem;
+  text-align: center;
+  font-size: 1rem; /* biar proporsional */
+  line-height: 1;
+}
 
-    <style>
-        /* Sedikit perapihan ukuran icon di dropdown */
-        .select2-results__option .fa { margin-right: .5rem; width: 1.25rem; text-align: center; }
-        .select2-selection__rendered .fa { margin-right: .5rem; }
-    </style>
+/* ===== Bootstrap 4 theme ===== */
+.select2-container--bootstrap4 .select2-selection--single {
+  height: calc(2.5rem + 2px);            /* samakan dgn .form-control-lg/biasa */
+  padding: .5rem .75rem;
+  display: flex;
+  align-items: center;                   /* pusatkan vertikal */
+  position: relative;
+  border: 1px solid #d9dee3;
+  border-radius: 0.375rem;
+}
+.select2-container--bootstrap4 .select2-selection__rendered {
+  padding-left: 0;                        /* padding sudah dari parent */
+  padding-right: 2rem;                    /* ruang utk tombol clear */
+  line-height: 1.25;                      /* jangan pakai line-height tinggi */
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+}
+.select2-container--bootstrap4 .select2-selection__arrow {
+  height: 100%;
+}
+.select2-container--bootstrap4 .select2-selection__clear {
+  position: absolute;                     /* posisikan '×' di kanan-tengah */
+  right: .75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 0;
+}
+
+/* ===== Bootstrap 5 theme ===== */
+.select2-container--bootstrap-5 .select2-selection--single {
+  min-height: calc(2.5rem + 2px);
+  height: calc(2.5rem + 2px);
+  padding: .5rem .75rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.select2-container--bootstrap-5 .select2-selection__rendered {
+  padding-left: 0;
+  padding-right: 2rem;
+  line-height: 1.25;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+}
+.select2-container--bootstrap-5 .select2-selection__clear {
+  position: absolute;
+  right: .75rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Samakan tinggi item di dropdown agar rapi */
+.select2-container .select2-results__option {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+</style>
 @endpush
 
 @push('scripts')
+<script>
+(function () {
+  function withIcon(item) {
+    if (!item.id) return item.text;
+    var iconClass = '';
+    if (item.element && item.element.dataset && item.element.dataset.icon) {
+      iconClass = item.element.dataset.icon;   // untuk parent
+    } else {
+      iconClass = item.id;                     // untuk icon picker
+    }
+    if (!iconClass) return $('<span>'+ item.text +'</span>');
+    return $('<span><i class="'+ iconClass +'"></i> '+ item.text +'</span>');
+  }
 
-    <script>
-        (function() {
-            function formatOption (item) {
-                if (!item.id) { // placeholder / group
-                    return item.text;
-                }
-                // item.id = value option => berisi class FA, item.text = label
-                var $node = $(
-                    '<span><i class="' + item.id + '"></i> ' + item.text + '</span>'
-                );
-                return $node;
-            }
+  // Ganti 'bootstrap4' -> 'bootstrap-5' kalau project-mu Bootstrap 5
+  var theme = 'bootstrap4'; // atau 'bootstrap-5'
 
-            $('#icon').select2({
-                theme: 'bootstrap4',             // feel free ganti/hapus jika tak pakai tema
-                width: '100%',
-                placeholder: '-- Pilih Icon --',
-                allowClear: true,
-                templateResult: formatOption,     // untuk tampilan pilihan di dropdown
-                templateSelection: formatOption,  // untuk tampilan nilai terpilih
-                escapeMarkup: function(m) { return m; } // izinkan HTML (icon) dirender
-            });
-        })();
-    </script>
+  $('#icon').select2({
+    theme: theme,
+    width: '100%',
+    placeholder: '-- Pilih Icon --',
+    allowClear: true,
+    templateResult: withIcon,
+    templateSelection: withIcon,
+    escapeMarkup: function (m) { return m; },
+    minimumResultsForSearch: 5
+  });
+
+  $('#parent_id').select2({
+    theme: theme,
+    width: '100%',
+    placeholder: '-- Tidak ada (Root) --',
+    allowClear: true,
+    templateResult: withIcon,
+    templateSelection: withIcon,
+    escapeMarkup: function (m) { return m; },
+    minimumResultsForSearch: 10
+  });
+})();
+</script>
 @endpush
 
 @endsection
