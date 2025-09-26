@@ -24,10 +24,33 @@ class UserController extends Controller
 
     public function index(Request $request): View
     {
-        $data = User::latest()->paginate(5);
+        $allowedPageSizes = [5, 10, 20, 50];
+        $ps = (int) $request->input('ps', 5);
+        if (!in_array($ps, $allowedPageSizes, true)) {
+            $ps = 5;
+        }
 
-        return view('pages.admin.user.index',compact('data'))
-            ->with('i', ($request->input('page', 1) - 1) * 5);
+        $q = trim((string) $request->input('q', ''));
+
+        $data = User::query()
+            ->with('roles') // cegah N+1 untuk badge role
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($qq) use ($q) {
+                    $qq->where('name', 'like', "%{$q}%")
+                    ->orWhere('email', 'like', "%{$q}%")
+                    ->orWhereHas('roles', fn ($r) => $r->where('name', 'like', "%{$q}%"));
+                });
+            })
+            ->latest()
+            ->paginate($ps)
+            ->appends($request->only('ps','q')); // bawa q & ps di pagination
+
+        return view('pages.admin.user.index', [
+            'data' => $data,
+            // tak perlu $i kalau pakai firstItem() + $loop->index,
+            // tetap dikirim bila ada bagian lain yang pakai
+            'i'    => ($data->currentPage() - 1) * $data->perPage(),
+        ]);
     }
 
     public function create(): View

@@ -26,12 +26,31 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $products = Product::latest()->paginate(5);
+        $allowedPageSizes = [5, 10, 20, 50];
+        $ps = (int) $request->input('ps', 5);
+        if (!in_array($ps, $allowedPageSizes, true)) {
+            $ps = 5;
+        }
 
-        return view('pages.admin.product.index',compact('products'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
+        $q = trim((string) $request->input('q', ''));
+
+        $products = Product::query()
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($qq) use ($q) {
+                    $qq->where('name', 'like', "%{$q}%")
+                    ->orWhere('detail', 'like', "%{$q}%");
+                });
+            })
+            ->latest()
+            ->paginate($ps)
+            ->appends($request->only('ps','q'));
+
+        return view('pages.admin.product.index', [
+            'products' => $products,
+            'i' => ($products->currentPage() - 1) * $products->perPage(),
+        ]);
     }
 
     /**

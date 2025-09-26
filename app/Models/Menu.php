@@ -44,4 +44,9 @@ class Menu extends Model
                 ->orWhereIn('permission_name', $user->getAllPermissions()->pluck('name'));
         });
     }
+
+    public function permissions()
+    {
+        return $this->hasMany(\App\Models\Permission::class, 'menu_id');
+    }
 }

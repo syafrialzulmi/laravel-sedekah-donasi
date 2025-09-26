@@ -13,21 +13,41 @@ class MenuController extends Controller
 {
     function __construct()
     {
-        //  $this->middleware('permission:menu-list|menu-create|menu-edit|menu-delete', ['only' => ['index','show']]);
-        //  $this->middleware('permission:menu-create', ['only' => ['create','store']]);
-        //  $this->middleware('permission:menu-edit', ['only' => ['edit','update']]);
-        //  $this->middleware('permission:menu-delete', ['only' => ['destroy']]);
+         $this->middleware('permission:menu-list|menu-create|menu-edit|menu-delete', ['only' => ['index','show']]);
+         $this->middleware('permission:menu-create', ['only' => ['create','store']]);
+         $this->middleware('permission:menu-edit', ['only' => ['edit','update']]);
+         $this->middleware('permission:menu-delete', ['only' => ['destroy']]);
     }
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $menus = Menu::with('parent')->latest()->paginate(5);
+        $allowedPageSizes = [5, 10, 20, 50];
+        $ps = (int) $request->input('ps', 5);
+        if (! in_array($ps, $allowedPageSizes, true)) {
+            $ps = 5;
+        }
 
-        return view('pages.admin.menu.index',compact('menus'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
+        $q = trim((string) $request->input('q', ''));
+
+        $menus = Menu::with('parent')
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($qq) use ($q) {
+                    $qq->where('title', 'like', "%{$q}%")
+                    ->orWhere('route', 'like', "%{$q}%")
+                    ->orWhereHas('parent', fn ($p) => $p->where('title', 'like', "%{$q}%"));
+                });
+            })
+            ->latest()
+            ->paginate($ps)
+            ->appends($request->only('ps', 'q')); // keep q & ps on links
+
+        return view('pages.admin.menu.index', [
+            'menus' => $menus,
+            'i'     => ($menus->currentPage() - 1) * $menus->perPage(),
+        ]);
     }
 
     /**

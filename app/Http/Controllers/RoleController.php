@@ -33,9 +33,26 @@ class RoleController extends Controller
      */
     public function index(Request $request): View
     {
-        $roles = Role::orderBy('id','DESC')->paginate(5);
-        return view('pages.admin.role.index',compact('roles'))
-            ->with('i', ($request->input('page', 1) - 1) * 5);
+        $allowedPageSizes = [5, 10, 20, 50];
+        $ps = (int) $request->input('ps', 5);
+        if (!in_array($ps, $allowedPageSizes, true)) {
+            $ps = 5;
+        }
+
+        $q = trim((string) $request->input('q', ''));
+
+        $roles = Role::query()
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where('name', 'like', "%{$q}%");
+            })
+            ->orderByDesc('id')
+            ->paginate($ps)
+            ->appends($request->only('ps', 'q')); // bawa query di pagination
+
+        return view('pages.admin.role.index', [
+            'roles' => $roles,
+            'i'     => ($roles->currentPage() - 1) * $roles->perPage(),
+        ]);
     }
 
     /**
@@ -45,8 +62,13 @@ class RoleController extends Controller
      */
     public function create(): View
     {
-        $permission = Permission::get();
-        return view('pages.admin.role.create',compact('permission'));
+        $permission = \App\Models\Permission::with('menu')
+            ->orderBy('menu_id')
+            ->orderBy('name')
+            ->get();
+
+
+        return view('pages.admin.role.create', compact('permission'));
     }
 
     /**
@@ -81,13 +103,22 @@ class RoleController extends Controller
      */
     public function show($id): View
     {
-        $role = Role::find($id);
-        $rolePermissions = Permission::join("role_has_permissions","role_has_permissions.permission_id","=","permissions.id")
-            ->where("role_has_permissions.role_id",$id)
+        $role = \Spatie\Permission\Models\Role::findOrFail($id);
+
+        $rolePermissions = \App\Models\Permission::with('menu:id,title')
+            ->select('permissions.*')
+            ->join('role_has_permissions','role_has_permissions.permission_id','=','permissions.id')
+            ->where('role_has_permissions.role_id', $id)
+            ->orderBy('permissions.menu_id')
+            ->orderBy('permissions.name')
             ->get();
 
-        return view('pages.admin.role.show',compact('role','rolePermissions'));
+        // kelompokkan per menu_id
+        $groups = $rolePermissions->groupBy('menu_id');
+
+        return view('pages.admin.role.show', compact('role','rolePermissions','groups'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -97,14 +128,23 @@ class RoleController extends Controller
      */
     public function edit($id): View
     {
-        $role = Role::find($id);
-        $permission = Permission::get();
-        $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
-            ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
+        $role = \Spatie\Permission\Models\Role::findOrFail($id);
+
+        // Ambil semua permission beserta menu untuk grouping
+        $permission = \App\Models\Permission::with('menu:id,title')
+            ->orderBy('menu_id')
+            ->orderBy('name')
+            ->get();
+
+        // ID permission yang sudah dimiliki role (untuk pre-check)
+        $rolePermissionIds = \DB::table('role_has_permissions')
+            ->where('role_id', $id)
+            ->pluck('permission_id')
             ->all();
 
-        return view('pages.admin.role.edit',compact('role','permission','rolePermissions'));
+        return view('pages.admin.role.edit', compact('role','permission','rolePermissionIds'));
     }
+
 
     /**
      * Update the specified resource in storage.
