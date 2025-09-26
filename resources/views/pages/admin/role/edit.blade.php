@@ -13,7 +13,7 @@
         <small class="text-muted">Ubah role & permission.</small>
       </div>
       <a href="{{ route('roles.index') }}" class="btn btn-secondary rounded-pill d-flex align-items-center gap-2">
-        <i class="fa fa-arrow-left"></i><span>Kembali</span>
+        <i class="fa fa-arrow-left me-1"></i> Kembali
       </a>
     </div>
 

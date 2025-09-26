@@ -13,7 +13,7 @@
                 <small class="text-muted">Detail pengguna sistem.</small>
             </div>
             <a href="{{ route('users.index') }}" class="btn btn-secondary rounded-pill d-flex align-items-center">
-                <i class="fa fa-arrow-left"></i> Kembali
+                <i class="fa fa-arrow-left me-1"></i> Kembali
             </a>
         </div>
 
@@ -68,9 +68,6 @@
             <div class="card-footer d-flex justify-content-end gap-2">
                 <a href="{{ route('users.edit',$user->id) }}" class="btn btn-primary">
                 <i class="fa-solid fa-pen-to-square me-1"></i> Edit
-                </a>
-                <a href="{{ route('users.index') }}" class="btn btn-secondary">
-                <i class="fa fa-arrow-left me-1"></i> Kembali
                 </a>
             </div>
             </div>

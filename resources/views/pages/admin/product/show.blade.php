@@ -13,7 +13,7 @@
                 <small class="text-muted">Detail produk</small>
             </div>
             <a href="{{ route('products.index') }}" class="btn btn-secondary rounded-pill d-flex align-items-center">
-                <i class="fa fa-arrow-left"></i> Kembali
+                <i class="fa fa-arrow-left me-1"></i> Kembali
             </a>
         </div>
 
@@ -38,9 +38,7 @@
                 <a href="{{ route('products.edit', $product->id) }}" class="btn btn-primary me-2">
                 <i class="fa-solid fa-pen-to-square me-1"></i> Edit
                 </a>
-                <a href="{{ route('products.index') }}" class="btn btn-secondary">
-                <i class="fa fa-arrow-left me-1"></i> Kembali
-                </a>
+
             </div>
             </div>
 

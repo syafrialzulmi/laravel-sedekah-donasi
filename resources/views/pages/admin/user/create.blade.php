@@ -13,7 +13,7 @@
                 <small class="text-muted">Tambah pengguna sistem.</small>
             </div>
             <a href="{{ route('users.index') }}" class="btn btn-secondary rounded-pill d-flex align-items-center">
-                <i class="fa fa-arrow-left"></i> Kembali
+                <i class="fa fa-arrow-left me-1"></i> Kembali
             </a>
         </div>
 

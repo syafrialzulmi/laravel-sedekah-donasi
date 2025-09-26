@@ -49,4 +49,10 @@ class Menu extends Model
     {
         return $this->hasMany(\App\Models\Permission::class, 'menu_id');
     }
+
+    public function link(): ?string
+    {
+        if ($this->route) return route($this->route);
+        return $this->url ? url($this->url) : null;
+    }
 }
