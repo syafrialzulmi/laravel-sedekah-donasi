@@ -22,33 +22,67 @@ class MenuController extends Controller
     /**
      * Display a listing of the resource.
      */
+
     public function index(Request $request)
     {
-        $allowedPageSizes = [5, 10, 20, 50];
-        $ps = (int) $request->input('ps', 5);
-        if (! in_array($ps, $allowedPageSizes, true)) {
-            $ps = 5;
+        $ps = (int) $request->get('ps', 5);
+        $q  = $request->get('q');
+
+        // daftar (tabel) — biarkan seperti semula
+        $menusQuery = Menu::query()->with('parent');
+        if ($q) {
+            $menusQuery->where(function ($s) use ($q) {
+                $s->where('title', 'like', "%{$q}%")
+                ->orWhere('route', 'like', "%{$q}%")
+                ->orWhereHas('parent', fn($p) => $p->where('title', 'like', "%{$q}%"));
+            });
+        }
+        $menus = $menusQuery->paginate($ps)->withQueryString();
+
+        // hirarki (tree) — tanpa pagination agar struktur tidak terpotong
+        $treeQuery = Menu::query()
+            ->with(['childrenRecursive', 'parent'])
+            ->orderBy('title');
+
+        if ($q) {
+            $treeQuery->where(function ($s) use ($q) {
+                $s->where('title', 'like', "%{$q}%")
+                ->orWhere('route', 'like', "%{$q}%")
+                ->orWhereHas('parent', fn($p) => $p->where('title', 'like', "%{$q}%"));
+            });
         }
 
-        $q = trim((string) $request->input('q', ''));
+        $roots = $treeQuery->whereNull('parent_id')->get();
 
-        $menus = Menu::with('parent')
-            ->when($q !== '', function ($query) use ($q) {
-                $query->where(function ($qq) use ($q) {
-                    $qq->where('title', 'like', "%{$q}%")
-                    ->orWhere('route', 'like', "%{$q}%")
-                    ->orWhereHas('parent', fn ($p) => $p->where('title', 'like', "%{$q}%"));
-                });
-            })
-            ->latest()
-            ->paginate($ps)
-            ->appends($request->only('ps', 'q')); // keep q & ps on links
-
-        return view('pages.admin.menu.index', [
-            'menus' => $menus,
-            'i'     => ($menus->currentPage() - 1) * $menus->perPage(),
-        ]);
+        return view('pages.admin.menu.index', compact('menus', 'roots'));
     }
+    // public function index(Request $request)
+    // {
+    //     $allowedPageSizes = [5, 10, 20, 50];
+    //     $ps = (int) $request->input('ps', 5);
+    //     if (! in_array($ps, $allowedPageSizes, true)) {
+    //         $ps = 5;
+    //     }
+
+    //     $q = trim((string) $request->input('q', ''));
+
+    //     $menus = Menu::with('parent')
+    //         ->when($q !== '', function ($query) use ($q) {
+    //             $query->where(function ($qq) use ($q) {
+    //                 $qq->where('title', 'like', "%{$q}%")
+    //                 ->orWhere('route', 'like', "%{$q}%")
+    //                 ->orWhereHas('parent', fn ($p) => $p->where('title', 'like', "%{$q}%"));
+    //             });
+    //         })
+    //         ->latest()
+    //         ->paginate($ps)
+    //         ->appends($request->only('ps', 'q')); // keep q & ps on links
+
+    //     return view('pages.admin.menu.index', [
+    //         'menus' => $menus,
+    //         'i'     => ($menus->currentPage() - 1) * $menus->perPage(),
+    //     ]);
+    // }
 
     /**
      * Show the form for creating a new resource.

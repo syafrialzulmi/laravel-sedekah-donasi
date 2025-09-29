@@ -55,4 +55,10 @@ class Menu extends Model
         if ($this->route) return route($this->route);
         return $this->url ? url($this->url) : null;
     }
+
+    // relasi rekursif (eager load anak-cucu)
+    public function childrenRecursive()
+    {
+        return $this->children()->with('childrenRecursive');
+    }
 }

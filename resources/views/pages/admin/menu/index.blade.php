@@ -5,133 +5,174 @@
 @section('main')
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Manage/</span> Menus</h4>
+  <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Manage/</span> Menus</h4>
 
-    <div class="card mb-4">
-        <div class="card-header d-flex align-items-center justify-content-between">
-        <div>
-            <h5 class="mb-0">Menus</h5>
-            <small class="text-muted">Daftar menus.</small>
-        </div>
-        <a href="{{ route('menus.create') }}" class="btn btn-primary rounded-pill d-flex align-items-center">
-            <i class="bx bx-plus me-1"></i> Tambah
-        </a>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-
-                {{-- Toolbar: server-side filter --}}
-                <form id="filterForm" method="GET" class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                <div class="input-group" style="max-width: 420px;">
-                    <span class="input-group-text"><i class="fa fa-search"></i></span>
-                    <input
-                    type="text"
-                    name="q"
-                    value="{{ request('q') }}"
-                    class="form-control"
-                    placeholder="Cari menu (judul, parent, route)...">
-                    @if(request()->filled('q'))
-                    <a href="{{ route('menus.index', ['ps' => request('ps', 5)]) }}" class="btn btn-light">Reset</a>
-                    @endif
-                </div>
-
-                <div class="ms-auto d-flex align-items-center gap-2">
-                    <span class="text-muted small d-none d-sm-inline">Tampilkan</span>
-                    <select name="ps" id="pageSize" class="form-select form-select-sm" style="width:auto;">
-                    @php $ps = (int) request('ps', 5); @endphp
-                    <option value="5"  {{ $ps===5  ? 'selected' : '' }}>5</option>
-                    <option value="10" {{ $ps===10 ? 'selected' : '' }}>10</option>
-                    <option value="20" {{ $ps===20 ? 'selected' : '' }}>20</option>
-                    <option value="50" {{ $ps===50 ? 'selected' : '' }}>50</option>
-                    </select>
-                </div>
-                </form>
-
-                @if ($menus->count())
-                {{-- Table with sticky header --}}
-                <div class="table-responsive mb-3 tableFixHead">
-                    <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                        <th style="width:72px;">No</th>
-                        <th>Title</th>
-                        <th>Parent</th>
-                        <th>Route</th>
-                        <th>Icon</th>
-                        <th style="width:180px;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @foreach ($menus as $menu)
-                        <tr>
-                        <td>{{ $menus->firstItem() + $loop->index }}</td>
-                        <td class="fw-semibold">{{ $menu->title }}</td>
-                        <td>{{ $menu->parent?->title ?? '-' }}</td>
-                        <td>{{ $menu->route }}</td>
-                        <td>
-                            <div class="text-muted text-truncate" style="max-width: 520px;">
-                            <i class="{{ $menu->icon }}"></i>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="btn-group">
-                            <a class="btn btn-outline-secondary btn-sm" href="{{ route('menus.show', $menu->id) }}">
-                                <i class="fa-solid fa-list"></i>
-                            </a>
-                            @can('menu-edit')
-                                <a class="btn btn-outline-primary btn-sm" href="{{ route('menus.edit', $menu->id) }}">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                                </a>
-                            @endcan
-                            @can('menu-delete')
-                                <button type="button"
-                                class="btn btn-outline-danger btn-sm btn-open-delete"
-                                data-url="{{ route('menus.destroy', $menu->id) }}"
-                                data-name="{{ $menu->title }}"
-                                data-bs-toggle="modal"
-                                data-bs-target="#confirmDeleteModal">
-                                <i class="fa-solid fa-trash"></i>
-                                </button>
-                            @endcan
-                            </div>
-                        </td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                    </table>
-                </div>
-
-                {{-- Pagination --}}
-                <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-muted">
-                    Menampilkan {{ $menus->firstItem() }}–{{ $menus->lastItem() }} dari {{ $menus->total() }}
-                    @if(request()->filled('q')) • hasil untuk: “{{ request('q') }}” @endif
-                    </small>
-                    {!! $menus->appends(request()->only('ps','q'))->links() !!}
-                </div>
-                @else
-                {{-- EMPTY STATE --}}
-                <div class="text-center p-5">
-                    <div class="mx-auto mb-3" style="width:96px;height:96px;">
-                    <svg viewBox="0 0 24 24" width="96" height="96" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" opacity=".2"/>
-                        <path d="M7 9h10M7 12h6" stroke="currentColor" stroke-linecap="round" opacity=".4"/>
-                        <path d="M8 20h8" stroke="currentColor" stroke-linecap="round" />
-                    </svg>
-                    </div>
-                    <h5 class="mb-1">Belum ada menu</h5>
-                    <p class="text-muted mb-3">Mulai tambahkan menu pertama Anda untuk muncul di daftar.</p>
-                    <a href="{{ route('menus.create') }}" class="btn btn-primary rounded-pill">
-                    <i class="bx bx-plus me-1"></i> Tambah Menu
-                    </a>
-                </div>
-                @endif
-
-            </div>
-
-        </div>
+  <div class="card mb-4">
+    <div class="card-header d-flex align-items-center justify-content-between">
+      <div>
+        <h5 class="mb-0">Menus</h5>
+        <small class="text-muted">Daftar menus.</small>
+      </div>
+      <a href="{{ route('menus.create') }}" class="btn btn-primary rounded-pill d-flex align-items-center">
+        <i class="bx bx-plus me-1"></i> Tambah
+      </a>
     </div>
+
+    <div class="card">
+      <div class="card-body">
+
+        {{-- Toolbar: server-side filter --}}
+        <form id="filterForm" method="GET" class="d-flex flex-wrap align-items-center gap-2 mb-3">
+          <div class="input-group" style="max-width: 420px;">
+            <span class="input-group-text"><i class="fa fa-search"></i></span>
+            <input
+              type="text"
+              name="q"
+              value="{{ request('q') }}"
+              class="form-control"
+              placeholder="Cari menu (judul, parent, route)...">
+            @if(request()->filled('q'))
+              <a href="{{ route('menus.index', ['ps' => request('ps', 5)]) }}" class="btn btn-light">Reset</a>
+            @endif
+          </div>
+
+          <div class="ms-auto d-flex align-items-center gap-2">
+            <span class="text-muted small d-none d-sm-inline">Tampilkan</span>
+            <select name="ps" id="pageSize" class="form-select form-select-sm" style="width:auto;">
+              @php $ps = (int) request('ps', 5); @endphp
+              <option value="5"  {{ $ps===5  ? 'selected' : '' }}>5</option>
+              <option value="10" {{ $ps===10 ? 'selected' : '' }}>10</option>
+              <option value="20" {{ $ps===20 ? 'selected' : '' }}>20</option>
+              <option value="50" {{ $ps===50 ? 'selected' : '' }}>50</option>
+            </select>
+          </div>
+        </form>
+
+        {{-- Tabs --}}
+        <ul class="nav nav-tabs mt-2" role="tablist">
+          <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-list" type="button" role="tab">
+              Daftar
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-tree" type="button" role="tab">
+              Hirarki
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content pt-3">
+
+          {{-- TAB: DAFTAR (tabel lama) --}}
+          <div class="tab-pane fade show active" id="tab-list" role="tabpanel">
+            @if ($menus->count())
+              {{-- Table with sticky header --}}
+              <div class="table-responsive mb-3 tableFixHead">
+                <table class="table table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th style="width:72px;">No</th>
+                      <th>Title</th>
+                      <th>Parent</th>
+                      <th>Route</th>
+                      <th>Icon</th>
+                      <th style="width:180px;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  @foreach ($menus as $menu)
+                    <tr>
+                      <td>{{ $menus->firstItem() + $loop->index }}</td>
+                      <td class="fw-semibold">{{ $menu->title }}</td>
+                      <td>{{ $menu->parent?->title ?? '-' }}</td>
+                      <td>{{ $menu->route }}</td>
+                      <td>
+                        <div class="text-muted text-truncate" style="max-width: 520px;">
+                          <i class="{{ $menu->icon }}"></i>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="btn-group">
+                          <a class="btn btn-outline-secondary btn-sm" href="{{ route('menus.show', $menu->id) }}">
+                            <i class="fa-solid fa-list"></i>
+                          </a>
+                          @can('menu-edit')
+                            <a class="btn btn-outline-primary btn-sm" href="{{ route('menus.edit', $menu->id) }}">
+                              <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                          @endcan
+                          @can('menu-delete')
+                            <button type="button"
+                              class="btn btn-outline-danger btn-sm btn-open-delete"
+                              data-url="{{ route('menus.destroy', $menu->id) }}"
+                              data-name="{{ $menu->title }}"
+                              data-bs-toggle="modal"
+                              data-bs-target="#confirmDeleteModal">
+                              <i class="fa-solid fa-trash"></i>
+                            </button>
+                          @endcan
+                        </div>
+                      </td>
+                    </tr>
+                  @endforeach
+                  </tbody>
+                </table>
+              </div>
+
+              {{-- Pagination --}}
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">
+                  Menampilkan {{ $menus->firstItem() }}–{{ $menus->lastItem() }} dari {{ $menus->total() }}
+                  @if(request()->filled('q')) • hasil untuk: “{{ request('q') }}” @endif
+                </small>
+                {!! $menus->appends(request()->only('ps','q'))->links() !!}
+              </div>
+            @else
+              {{-- EMPTY STATE --}}
+              <div class="text-center p-5">
+                <div class="mx-auto mb-3" style="width:96px;height:96px;">
+                  <svg viewBox="0 0 24 24" width="96" height="96" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" opacity=".2"/>
+                    <path d="M7 9h10M7 12h6" stroke="currentColor" stroke-linecap="round" opacity=".4"/>
+                    <path d="M8 20h8" stroke="currentColor" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <h5 class="mb-1">Belum ada menu</h5>
+                <p class="text-muted mb-3">Mulai tambahkan menu pertama Anda untuk muncul di daftar.</p>
+                <a href="{{ route('menus.create') }}" class="btn btn-primary rounded-pill">
+                  <i class="bx bx-plus me-1"></i> Tambah Menu
+                </a>
+              </div>
+            @endif
+          </div>
+
+          {{-- TAB: HIRARKI --}}
+          <div class="tab-pane fade" id="tab-tree" role="tabpanel">
+            @if($roots->count())
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="text-muted small">
+                  {{ request()->filled('q') ? 'Hasil hirarki untuk pencarian.' : 'Semua menu dalam bentuk hirarki.' }}
+                </div>
+                <div class="btn-group btn-group-sm">
+                  <button class="btn btn-light" id="expandAll"><i class="fa-solid fa-plus"></i> Buka Semua</button>
+                  <button class="btn btn-light" id="collapseAll"><i class="fa-solid fa-minus"></i> Tutup Semua</button>
+                </div>
+              </div>
+
+              <x-menus.tree :nodes="$roots" :level="0" />
+            @else
+              <div class="text-center text-muted py-4">
+                Tidak ada data untuk ditampilkan dalam hirarki.
+              </div>
+            @endif
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
 </div>
 
 {{-- Modal Konfirmasi Hapus --}}
@@ -167,6 +208,9 @@
   /* Sticky header ketika daftar panjang */
   .tableFixHead { max-height: 65vh; overflow: auto; }
   .tableFixHead thead th { position: sticky; top: 0; z-index: 2; }
+
+  /* Tree connector */
+  .border-start { border-left: 1px dashed rgba(0,0,0,.2)!important; }
 </style>
 @endpush
 
@@ -192,6 +236,14 @@
       const name = $(this).data('name');
       $('#deleteForm').attr('action', url);
       $('#deleteItemName').text(name);
+    });
+
+    // Expand/Collapse all (hirarki)
+    $('#expandAll').on('click', function () {
+      $('#tab-tree .collapse').collapse('show');
+    });
+    $('#collapseAll').on('click', function () {
+      $('#tab-tree .collapse').collapse('hide');
     });
   });
 </script>
