@@ -9,6 +9,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\SettingAppController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,4 +30,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('/admin/users', UserController::class);
     Route::resource('/admin/products', ProductController::class);
     Route::resource('/admin/menus', MenuController::class);
+
+    Route::get('/setting-app', [SettingAppController::class, 'index'])->name('setting-app.index');
+    Route::post('/setting-app', [SettingAppController::class, 'store'])->name('setting-app.store');
+    Route::put('/setting-app/{settingApp}', [SettingAppController::class, 'update'])->name('setting-app.update');
+    Route::delete('/setting-app', [SettingAppController::class, 'clear'])->name('setting-app.clear');
+
 });
