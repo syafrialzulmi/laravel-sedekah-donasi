@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\SettingAppController;
+use App\Http\Controllers\CustomerController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -35,5 +36,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/setting-app', [SettingAppController::class, 'store'])->name('setting-app.store');
     Route::put('/setting-app/{settingApp}', [SettingAppController::class, 'update'])->name('setting-app.update');
     Route::delete('/setting-app', [SettingAppController::class, 'clear'])->name('setting-app.clear');
+
+    Route::resource('customers', CustomerController::class);
 
 });
