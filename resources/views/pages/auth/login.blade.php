@@ -121,9 +121,24 @@
             </div>
         </div>
         <div class="mb-3">
+            <label for="captcha" class="form-label">Verifikasi Captcha</label>
+            <div class="d-flex align-items-center">
+                <img id="captcha-img" src="{{ captcha_src('flat') }}" alt="captcha">
+                <button type="button" class="btn btn-outline-secondary ms-2" id="reload-captcha">
+                    <i class="bx bx-refresh"></i>
+                </button>
+            </div>
+            <input type="text" class="form-control mt-2 @error('captcha') is-invalid @enderror"
+                name="captcha" placeholder="Masukkan captcha">
+            @error('captcha')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="mb-3">
             <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="remember-me" />
-            <label class="form-check-label" for="remember-me"> Ingat Aku </label>
+                <input class="form-check-input" type="checkbox" id="remember-me"
+                    name="remember" {{ old('remember') ? 'checked' : '' }} />
+                <label class="form-check-label" for="remember-me"> Ingat Aku </label>
             </div>
         </div>
         <div class="mb-3">
@@ -141,3 +156,27 @@
 </div>
 <!-- /Register -->
 @endsection
+
+@push('scripts')
+<script>
+$(function () {
+  $('#reload-captcha').on('click', function (e) {
+    e.preventDefault();
+    $.ajax({
+      url: '{{ url("reload-captcha") }}',
+      type: 'GET',
+      cache: false,
+      dataType: 'json',
+      success: function (data) {
+        var url = data.url + '&_=' + Date.now(); // bust cache
+        $('#captcha-img').attr('src', url);
+      },
+      error: function () {
+        // opsional: tampilkan notifikasi
+        console.error('Gagal memuat captcha baru.');
+      }
+    });
+  });
+});
+</script>
+@endpush

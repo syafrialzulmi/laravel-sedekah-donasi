@@ -12,6 +12,8 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\SettingAppController;
 use App\Http\Controllers\CustomerController;
 
+use Mews\Captcha\Facades\Captcha;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -21,6 +23,11 @@ Route::middleware('guest')->group(function () {
     Route::post('/registrasi', [AuthController::class, 'submitFormRegistrasi'])->name('registrasi.submit');
     Route::get('/login', [AuthController::class, 'showFormLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'submitFormLogin'])->name('login.submit');
+    Route::get('reload-captcha', function () {
+        return response()->json([
+            'url' => captcha_src('flat'), // hanya URL gambar
+        ]);
+    });
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

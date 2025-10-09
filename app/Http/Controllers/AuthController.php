@@ -52,43 +52,58 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
+            'captcha'  => 'required|captcha'
+        ], [
+            'captcha.required' => 'Silakan isi captcha.',
+            'captcha.captcha' => 'Captcha tidak valid, silakan coba lagi.'
         ]);
 
-        $credentials = [];
-        $username = $request->username;
+        $username = $request->input('username');
+        $password = $request->input('password');
+        $remember = $request->boolean('remember');
+
+        // Coba autentikasi fleksibel: email atau username
+        $base = ['password' => $password];
+        $attempted = false;
 
         if (filter_var($username, FILTER_VALIDATE_EMAIL)) {
-            $credentials['email'] = $username;
+            // Jika format email, coba via kolom email
+            $attempted = Auth::attempt(['email' => $username] + $base, $remember);
+        } else {
+            // Jika bukan email, coba via kolom username lebih dulu
+            $attempted = Auth::attempt(['username' => $username] + $base, $remember)
+                    || Auth::attempt(['email' => $username] + $base, $remember); // fallback kalau user menulis email tanpa '@', dll.
         }
 
-        $credentials['password'] = $request->password;
-
-        $remember = $request->has('remember-me');
-
-        if (Auth::attempt($credentials, $remember)) {
+        if ($attempted) {
             $request->session()->regenerate();
 
-            $roleId = Auth::user()->role_id;
+            // contoh: jika mau arahkan berdasarkan role_id
+            // $roleId = Auth::user()->role_id;
 
-            // if ($roleId == 3) {
-            //     return redirect()->intended('/ormas');
-            // } else {
-                return redirect()->intended('/admin');
-            // }
+            return redirect()->intended('/admin');
         }
 
         return back()->withErrors([
             'username' => 'Login gagal, username atau password salah.',
-        ])->onlyInput('username');
+        ])->onlyInput('username', 'remember');
     }
 
     public function logout(Request $request)
     {
+        // Log out user
         Auth::logout();
 
+        // Hancurkan sesi dan data pengguna
         $request->session()->invalidate();
+
+        // Regenerasi token CSRF untuk mencegah serangan
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        // Flush seluruh data sesi, termasuk 'remember me' token
+        $request->session()->flush();
+
+        // Arahkan user ke halaman login setelah logout
+        return redirect()->route('login')->with('success', 'Anda telah berhasil logout.');
     }
 }
