@@ -20,7 +20,7 @@
     <div class="card-body">
       <form action="{{ route('customers.update', $customer->id) }}" method="POST">
         @csrf @method('PUT')
-        @include('customers._form', ['customer' => $customer])
+        @include('pages.admin.customers._form', ['customer' => $customer])
         <div class="mt-3">
           <button class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-1"></i> Ubah</button>
         </div>

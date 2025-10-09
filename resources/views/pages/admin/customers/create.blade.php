@@ -20,7 +20,7 @@
     <div class="card-body">
       <form action="{{ route('customers.store') }}" method="POST" class="needs-validation" novalidate>
         @csrf
-        @include('customers._form', ['customer' => $customer])
+        @include('pages.admin.customers._form', ['customer' => $customer])
         <div class="mt-3">
           <button class="btn btn-success"><i class="fa-solid fa-save me-1"></i> Simpan</button>
         </div>
