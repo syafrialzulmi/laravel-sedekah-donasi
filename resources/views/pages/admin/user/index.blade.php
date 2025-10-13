@@ -5,12 +5,12 @@
 @section('main')
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Manage/</span> Users Management</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Manage/</span> Pengguna</h4>
 
     <div class="card mb-4">
         <div class="card-header d-flex align-items-center justify-content-between">
         <div>
-            <h5 class="mb-0">Users Management</h5>
+            <h5 class="mb-0">Pengguna</h5>
             <small class="text-muted">Daftar pengguna sistem.</small>
         </div>
         <a href="{{ route('users.create') }}" class="btn btn-primary rounded-pill d-flex align-items-center">

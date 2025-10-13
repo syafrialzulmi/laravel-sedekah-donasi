@@ -1,21 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Setting App')
+@section('title', 'Pengaturan Aplikasi')
 
 @section('main')
 <div class="container-xxl flex-grow-1 container-p-y">
-  <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Manage/</span> Setting App</h4>
+  <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Manage/</span> Pengaturan Aplikasi</h4>
 
-  {{-- Alerts --}}
-  {{-- @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
-  @endif
-  @if(session('error'))
-    <div class="alert alert-danger">{{ session('error') }}</div>
-  @endif
-  @if(session('info'))
-    <div class="alert alert-info">{{ session('info') }}</div>
-  @endif --}}
   @if($errors->any())
     <div class="alert alert-danger">
       <ul class="mb-0">
@@ -34,15 +24,13 @@
       </div>
 
       {{-- Tombol Kosongkan Data (muncul hanya jika data ada) --}}
+      @can('setting-app-delete')
       @if($setting)
-        <form action="{{ route('setting-app.clear') }}" method="POST" onsubmit="return confirm('Kosongkan semua data pengaturan? Tindakan ini tidak bisa dibatalkan.')">
-          @csrf
-          @method('DELETE')
-          <button class="btn btn-outline-danger">
-            <i class="fa-solid fa-trash-can me-1"></i> Kosongkan Data
-          </button>
-        </form>
+        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmClearModal">
+          <i class="fa-solid fa-trash-can me-1"></i> Kosongkan Data
+        </button>
       @endif
+      @endcan
     </div>
 
     <div class="card-body">
@@ -65,10 +53,10 @@
         </div>
 
         <div class="col-md-6">
-            <label class="form-label">Singkatan Nama Aplikasi</label>
+            <label class="form-label">Singkatan Nama Aplikasi <span class="text-danger">*</span></label>
             <input type="text" name="name_app_singkatan"
                     class="form-control"
-                    value="{{ old('name_app_singkatan', $setting->name_app_singkatan ?? '') }}">
+                    value="{{ old('name_app_singkatan', $setting->name_app_singkatan ?? '') }}" required>
             <small class="text-muted">Contoh: "SIAKAD", "POS", dll.</small>
         </div>
 
@@ -113,17 +101,53 @@
         </div>
 
         <div class="col-12">
-          @if($setting)
-            <button class="btn btn-primary">
-              <i class="fa-solid fa-floppy-disk me-1"></i> Ubah
-            </button>
-          @else
-            <button class="btn btn-success">
-              <i class="fa-solid fa-save me-1"></i> Simpan
-            </button>
-          @endif
+            @if($setting)
+                @can('setting-app-edit')
+                    <button class="btn btn-primary">
+                    <i class="fa-solid fa-floppy-disk me-1"></i> Ubah
+                    </button>
+                @endcan
+            @else
+                @can('setting-app-create')
+                    <button class="btn btn-success">
+                    <i class="fa-solid fa-save me-1"></i> Simpan
+                    </button>
+                @endcan
+            @endif
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+{{-- Modal Konfirmasi Kosongkan Data --}}
+<div class="modal fade" id="confirmClearModal" tabindex="-1" aria-labelledby="confirmClearModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-danger">
+      <div class="modal-header bg-danger">
+        <h5 class="modal-title text-white" id="confirmClearModalLabel">
+          <i class="fa-solid fa-triangle-exclamation me-2"></i> Konfirmasi Hapus Data
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0">
+          Apakah Anda yakin ingin <strong>mengosongkan semua data pengaturan</strong>? <br>
+          <span class="text-danger fw-bold">Tindakan ini tidak bisa dibatalkan.</span>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fa-solid fa-xmark me-1"></i> Batal
+        </button>
+        <form action="{{ route('setting-app.clear') }}" method="POST" id="clearForm">
+          @csrf
+          @method('DELETE')
+          <button type="submit" class="btn btn-danger">
+            <i class="fa-solid fa-trash-can me-1"></i> Ya, Kosongkan
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 </div>

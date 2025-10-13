@@ -7,6 +7,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Menu;
+use App\Models\SettingApp;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -65,5 +66,8 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('menuTree', $tree);
         });
+
+        $settingApp = SettingApp::first();
+        View::share('settingApp', $settingApp);
     }
 }

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Show Menu')
+@section('title', 'Detail Menu')
 
 @section('main')
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -9,8 +9,8 @@
     <div class="card mb-4">
         <div class="card-header d-flex align-items-center justify-content-between">
             <div>
-                <h5 class="mb-0">Show Menu</h5>
-                <small class="text-muted">Detail menu</small>
+                <h5 class="mb-0">Detail Menu</h5>
+                <small class="text-muted">Menu sistem</small>
             </div>
             <a href="{{ route('menus.index') }}" class="btn btn-secondary rounded-pill d-flex align-items-center">
                 <i class="fa fa-arrow-left me-1"></i> Kembali

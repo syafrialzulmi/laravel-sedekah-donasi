@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Show Users')
+@section('title', 'Detail Pengguna')
 
 @section('main')
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Manage/</span> Users Management</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Manage/</span> Pengguna</h4>
 
     <div class="card mb-4">
         <div class="card-header d-flex align-items-center justify-content-between">
             <div>
-                <h5 class="mb-0">Show User</h5>
-                <small class="text-muted">Detail pengguna sistem.</small>
+                <h5 class="mb-0">Detail Pengguna</h5>
+                <small class="text-muted">Pengguna sistem.</small>
             </div>
             <a href="{{ route('users.index') }}" class="btn btn-secondary rounded-pill d-flex align-items-center">
                 <i class="fa fa-arrow-left me-1"></i> Kembali

@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
-@section('title', 'Menus')
+@section('title', 'Menu')
 
 @section('main')
 
 <div class="container-xxl flex-grow-1 container-p-y">
-  <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Manage/</span> Menus</h4>
+  <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Manage/</span> Menu</h4>
 
   <div class="card mb-4">
     <div class="card-header d-flex align-items-center justify-content-between">
       <div>
-        <h5 class="mb-0">Menus</h5>
-        <small class="text-muted">Daftar menus.</small>
+        <h5 class="mb-0">Menu</h5>
+        <small class="text-muted">Daftar menu sistem</small>
       </div>
       <a href="{{ route('menus.create') }}" class="btn btn-primary rounded-pill d-flex align-items-center">
         <i class="bx bx-plus me-1"></i> Tambah

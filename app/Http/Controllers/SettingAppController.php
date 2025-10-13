@@ -9,6 +9,14 @@ use Illuminate\Validation\Rule;
 
 class SettingAppController extends Controller
 {
+    function __construct()
+    {
+         $this->middleware('permission:setting-app-list|setting-app-create|setting-app-edit|setting-app-delete', ['only' => ['index','show']]);
+         $this->middleware('permission:setting-app-create', ['only' => ['create','store']]);
+         $this->middleware('permission:setting-app-edit', ['only' => ['edit','update']]);
+         $this->middleware('permission:setting-app-delete', ['only' => ['destroy']]);
+    }
+
     public function index()
     {
         $setting = SettingApp::first();

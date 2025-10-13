@@ -16,6 +16,8 @@
   $isActive = $selfActive || $childActive;
 @endphp
 
+{{-- hanya tampilkan kalau punya anak atau punya route sendiri --}}
+@if($hasChildren || $node->route)
 <li class="menu-item {{ $isActive ? 'active open' : '' }}">
   @if($hasChildren)
     <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -36,3 +38,4 @@
     </a>
   @endif
 </li>
+@endif

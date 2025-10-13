@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Role')
+@section('title', 'Ubah Hak Akses')
 
 @section('main')
 <div class="container-xxl flex-grow-1 container-p-y">
-  <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Manage/</span> Roles Management</h4>
+  <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Manage/</span> Hak Akses</h4>
 
   <div class="card mb-4">
     <div class="card-header d-flex align-items-center justify-content-between">
       <div>
-        <h5 class="mb-0">Edit Role</h5>
-        <small class="text-muted">Ubah role & permission.</small>
+        <h5 class="mb-0">Ubah Hak Akses</h5>
+        <small class="text-muted">Role dan hak akses sistem</small>
       </div>
       <a href="{{ route('roles.index') }}" class="btn btn-secondary rounded-pill d-flex align-items-center gap-2">
         <i class="fa fa-arrow-left me-1"></i> Kembali
@@ -160,9 +160,8 @@
           </div>
 
           <div class="d-flex justify-content-end gap-2">
-            <a href="{{ route('roles.index') }}" class="btn btn-light">Batal</a>
             <button type="submit" class="btn btn-primary">
-              <i class="fa-solid fa-floppy-disk me-1"></i> Simpan
+              <i class="fa-solid fa-floppy-disk me-1"></i> Ubah
             </button>
           </div>
         </form>

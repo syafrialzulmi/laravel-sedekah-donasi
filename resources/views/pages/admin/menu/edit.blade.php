@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Menu')
+@section('title', 'Ubah Menu')
 
 @section('main')
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -9,8 +9,8 @@
     <div class="card mb-4">
         <div class="card-header d-flex align-items-center justify-content-between">
             <div>
-                <h5 class="mb-0">Edit Menu</h5>
-                <small class="text-muted">Ubah menu</small>
+                <h5 class="mb-0">Ubah Menu</h5>
+                <small class="text-muted">Menu sistem</small>
             </div>
             <a href="{{ route('menus.index') }}" class="btn btn-secondary rounded-pill d-flex align-items-center">
                 <i class="fa fa-arrow-left me-1"></i> Kembali
@@ -124,7 +124,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">
-                        <i class="fa-solid fa-floppy-disk"></i> Simpan
+                        <i class="fa-solid fa-floppy-disk"></i> Ubah
                     </button>
                 </form>
 
