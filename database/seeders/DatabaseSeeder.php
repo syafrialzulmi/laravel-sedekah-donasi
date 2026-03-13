@@ -20,6 +20,14 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        $this->call(CustomerSeeder::class);
+        // php artisan migrate:fresh --seed
+
+        $this->call([
+            MenuSeeder::class,
+            PermissionSeeder::class,
+            KecamatanSeeder::class,
+            DesaSeeder::class,
+            CreateAdminUserSeeder::class,
+        ]);
     }
 }

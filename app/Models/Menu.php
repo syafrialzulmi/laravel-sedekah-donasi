@@ -18,6 +18,7 @@ class Menu extends Model
         'parent_id',
         'order',
         'permission_name',
+        'icon_image',
     ];
 
     public function children(): HasMany
