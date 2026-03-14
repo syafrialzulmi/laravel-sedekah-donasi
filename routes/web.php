@@ -34,16 +34,19 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::group(['middleware' => ['auth']], function() {
     Route::get('/admin', [DasborController::class, 'index'])->name('dasbor');
-    Route::resource('/admin/roles', RoleController::class);
-    Route::resource('/admin/users', UserController::class);
-    Route::resource('/admin/products', ProductController::class);
-    Route::resource('/admin/menus', MenuController::class);
 
-    Route::get('/setting-app', [SettingAppController::class, 'index'])->name('setting-app.index');
-    Route::post('/setting-app', [SettingAppController::class, 'store'])->name('setting-app.store');
-    Route::put('/setting-app/{settingApp}', [SettingAppController::class, 'update'])->name('setting-app.update');
-    Route::delete('/setting-app', [SettingAppController::class, 'clear'])->name('setting-app.clear');
+    Route::prefix('admin/manage')->group(function () {
+        Route::resource('/roles', RoleController::class);
+        Route::resource('/users', UserController::class);
+        Route::resource('/products', ProductController::class);
+        Route::resource('/menus', MenuController::class);
 
-    Route::resource('customers', CustomerController::class);
+        Route::get('/setting-app', [SettingAppController::class, 'index'])->name('setting-app.index');
+        Route::post('/setting-app', [SettingAppController::class, 'store'])->name('setting-app.store');
+        Route::put('/setting-app/{settingApp}', [SettingAppController::class, 'update'])->name('setting-app.update');
+        Route::delete('/setting-app', [SettingAppController::class, 'clear'])->name('setting-app.clear');
+
+        // Route::resource('customers', CustomerController::class);
+    });
 
 });

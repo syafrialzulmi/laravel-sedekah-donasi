@@ -25,9 +25,9 @@ class UserController extends Controller
     public function index(Request $request): View
     {
         $allowedPageSizes = [5, 10, 20, 50];
-        $ps = (int) $request->input('ps', 5);
+        $ps = (int) $request->input('ps', 10);
         if (!in_array($ps, $allowedPageSizes, true)) {
-            $ps = 5;
+            $ps = 10;
         }
 
         $q = trim((string) $request->input('q', ''));
@@ -45,10 +45,8 @@ class UserController extends Controller
             ->paginate($ps)
             ->appends($request->only('ps','q')); // bawa q & ps di pagination
 
-        return view('pages.admin.user.index', [
+        return view('pages.admin.manage.user.index', [
             'data' => $data,
-            // tak perlu $i kalau pakai firstItem() + $loop->index,
-            // tetap dikirim bila ada bagian lain yang pakai
             'i'    => ($data->currentPage() - 1) * $data->perPage(),
         ]);
     }
@@ -57,7 +55,7 @@ class UserController extends Controller
     {
         $roles = Role::pluck('name','name')->all();
 
-        return view('pages.admin.user.create',compact('roles'));
+        return view('pages.admin.manage.user.create',compact('roles'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -66,11 +64,20 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|same:confirm-password',
-            'roles' => 'required'
+            'no_hp' => 'required|string|max:15',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:1024',
+            'roles' => 'required|string',
+            'username' => 'nullable|unique:users,username',
         ]);
 
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
+
+        if ($request->hasFile('foto')) {
+            $input['foto'] = $request->file('foto')->store('foto_users', 'public');
+        }
+
+        $input['created_by'] = auth()->id();
 
         $user = User::create($input);
         $user->assignRole($request->input('roles'));
@@ -83,7 +90,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        return view('pages.admin.user.show',compact('user'));
+        return view('pages.admin.manage.user.show',compact('user'));
     }
 
     public function edit($id): View
@@ -92,17 +99,22 @@ class UserController extends Controller
         $roles = Role::pluck('name','name')->all();
         $userRole = $user->roles->pluck('name','name')->all();
 
-        return view('pages.admin.user.edit',compact('user','roles','userRole'));
+        return view('pages.admin.manage.user.edit',compact('user','roles','userRole'));
     }
 
     public function update(Request $request, $id): RedirectResponse
     {
         $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email,'.$id,
-            'password' => 'same:confirm-password',
-            'roles' => 'required'
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|email|unique:users,email,' . $id,
+            'password'      => 'nullable|same:confirm-password|min:6',
+            'no_hp'         => 'required|string|max:15',
+            'foto'          => 'nullable|image|mimes:jpeg,png,jpg|max:1024',
+            'roles'         => 'required|string',
+            'username'      => 'nullable|unique:users,username,' . $id,
         ]);
+
+        $user = User::find($id);
 
         $input = $request->all();
         if(!empty($input['password'])){
@@ -111,7 +123,18 @@ class UserController extends Controller
             $input = Arr::except($input,array('password'));
         }
 
-        $user = User::find($id);
+        if ($request->hasFile('foto')) {
+            // Hapus foto lama jika ada
+            if ($user->foto && \Storage::disk('public')->exists($user->foto)) {
+                \Storage::disk('public')->delete($user->foto);
+            }
+
+            // Simpan foto baru
+            $input['foto'] = $request->file('foto')->store('foto_users', 'public');
+        }
+
+        $input['updated_by'] = auth()->id();
+
         $user->update($input);
         DB::table('model_has_roles')->where('model_id',$id)->delete();
 

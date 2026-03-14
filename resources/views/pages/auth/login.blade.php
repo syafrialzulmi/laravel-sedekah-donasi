@@ -99,13 +99,13 @@
         <form id="formAuthentication" class="mb-3" action="{{ route('login.submit') }}" method="POST">
             @csrf
         <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
+            <label for="email" class="form-label">Email/ Username</label>
             <input
             type="text"
             class="form-control"
             id="username"
             name="username"
-            placeholder="Masukkan email Anda"
+            placeholder="Masukkan email atau username Anda"
             autofocus
             />
         </div>
@@ -154,12 +154,12 @@
         </div>
         </form>
 
-        <p class="text-center">
+        {{-- <p class="text-center">
         <span>Baru di platform kami?</span>
         <a href="{{ route('registrasi') }}">
             <span>Buat akun sekarang</span>
         </a>
-        </p>
+        </p> --}}
     </div>
 </div>
 <!-- /Register -->

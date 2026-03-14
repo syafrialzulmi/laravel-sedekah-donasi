@@ -32,14 +32,14 @@
                 class="form-control"
                 placeholder="Cari nama, email, atau role...">
                 @if(request()->filled('q'))
-                <a href="{{ route('users.index', ['ps' => request('ps', 5)]) }}" class="btn btn-light">Reset</a>
+                <a href="{{ route('users.index', ['ps' => request('ps', 10)]) }}" class="btn btn-light">Reset</a>
                 @endif
             </div>
 
             <div class="ms-auto d-flex align-items-center gap-2">
                 <span class="text-muted small d-none d-sm-inline">Tampilkan</span>
                 <select name="ps" id="pageSize" class="form-select form-select-sm" style="width:auto;">
-                @php $ps = (int) request('ps', 5); @endphp
+                @php $ps = (int) request('ps', 10); @endphp
                 <option value="5"  {{ $ps===5  ? 'selected' : '' }}>5</option>
                 <option value="10" {{ $ps===10 ? 'selected' : '' }}>10</option>
                 <option value="20" {{ $ps===20 ? 'selected' : '' }}>20</option>
@@ -50,57 +50,65 @@
 
             @if ($data->count())
             <div class="table-responsive mb-3 tableFixHead">
-                <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                    <th style="width:72px;">No</th>
-                    <th style="min-width:220px;">Name</th>
-                    <th style="min-width:220px;">Email</th>
-                    <th>Roles</th>
-                    <th style="width:200px;">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody">
-                @foreach ($data as $user)
-                    <tr class="user-row">
-                    <td>{{ $data->firstItem() + $loop->index }}</td>
-                    <td class="fw-semibold">{{ $user->name }}</td>
-                    <td class="text-muted">
-                        <span class="text-truncate d-inline-block" style="max-width: 260px;">{{ $user->email }}</span>
-                    </td>
-                    <td>
-                        @php $roles = $user->getRoleNames(); @endphp
-                        @if($roles && $roles->count())
-                        <div class="d-flex flex-wrap gap-1">
-                            @foreach($roles as $r)
-                            <span class="badge rounded-pill bg-primary-subtle text-primary border">{{ $r }}</span>
-                            @endforeach
-                        </div>
-                        @else
-                        <span class="text-muted">—</span>
-                        @endif
-                    </td>
-                    <td>
-                        <div class="btn-group">
-                        <a class="btn btn-outline-secondary btn-sm" href="{{ route('users.show',$user->id) }}">
-                            <i class="fa-solid fa-list"></i>
-                        </a>
-                        <a class="btn btn-outline-primary btn-sm" href="{{ route('users.edit',$user->id) }}">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </a>
-                        <button type="button"
-                            class="btn btn-outline-danger btn-sm btn-open-delete"
-                            data-url="{{ route('users.destroy',$user->id) }}"
-                            data-name="{{ $user->name }}"
-                            data-bs-toggle="modal"
-                            data-bs-target="#confirmDeleteModal">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                        </div>
-                    </td>
-                    </tr>
-                @endforeach
-                </tbody>
+                <table class="table table-sm table-hover table-bordered align-middle mb-0">
+                    <thead class="table-light small">
+                        <tr>
+                        <th style="width:72px;">No</th>
+                        <th style="min-width:220px;">Name</th>
+                        <th style="min-width:220px;">Email</th>
+                        <th>Roles</th>
+                        <th style="width:200px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody" class="small">
+                    @foreach ($data as $user)
+                        <tr class="user-row">
+                        <td>{{ $data->firstItem() + $loop->index }}</td>
+                        <td class="fw-semibold">
+                            {{ $user->name }}
+                            @if(!empty($user->username))
+                                <div class="text-muted small">
+                                    {{-- ikon optional --}}
+                                    <i class="fa-solid fa-user-tag me-1"></i>{{ $user->username }}
+                                </div>
+                            @endif
+                        </td>
+                        <td class="text-muted">
+                            <span class="text-truncate d-inline-block" style="max-width: 260px;">{{ $user->email }}</span>
+                        </td>
+                        <td>
+                            @php $roles = $user->getRoleNames(); @endphp
+                            @if($roles && $roles->count())
+                            <div class="d-flex flex-wrap gap-1">
+                                @foreach($roles as $r)
+                                <span class="badge rounded-pill bg-primary-subtle text-primary border">{{ $r }}</span>
+                                @endforeach
+                            </div>
+                            @else
+                            <span class="text-muted">—</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a class="btn btn-outline-secondary btn-sm" href="{{ route('users.show',$user->id) }}">
+                                    <i class="fa-solid fa-list"></i>
+                                </a>
+                                <a class="btn btn-outline-primary btn-sm" href="{{ route('users.edit',$user->id) }}">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                                <button type="button"
+                                    class="btn btn-outline-danger btn-sm btn-open-delete"
+                                    data-url="{{ route('users.destroy',$user->id) }}"
+                                    data-name="{{ $user->name }}"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#confirmDeleteModal">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
                 </table>
             </div>
 
@@ -166,6 +174,9 @@
 <style>
   .tableFixHead { max-height: 65vh; overflow: auto; }
   .tableFixHead thead th { position: sticky; top: 0; z-index: 2; }
+  .table td, .table th{
+        padding: .35rem .5rem;
+    }
 </style>
 @endpush
 
