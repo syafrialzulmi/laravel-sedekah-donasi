@@ -13,9 +13,11 @@
         <h5 class="mb-0">Menu</h5>
         <small class="text-muted">Daftar menu sistem</small>
       </div>
-      <a href="{{ route('menus.create') }}" class="btn btn-primary rounded-pill d-flex align-items-center">
-        <i class="bx bx-plus me-1"></i> Tambah
-      </a>
+      @can('menu-create')
+        <a href="{{ route('menus.create') }}" class="btn btn-primary rounded-pill d-flex align-items-center">
+            <i class="bx bx-plus me-1"></i> Tambah
+        </a>
+      @endcan
     </div>
 
     <div class="card">
@@ -23,13 +25,13 @@
 
         {{-- Toolbar: server-side filter --}}
         <form id="filterForm" method="GET" class="d-flex flex-wrap align-items-center gap-2 mb-3">
-          <div class="input-group" style="max-width: 420px;">
+          <div class="input-group input-group-sm" style="max-width: 420px;">
             <span class="input-group-text"><i class="fa fa-search"></i></span>
             <input
               type="text"
               name="q"
               value="{{ request('q') }}"
-              class="form-control"
+              class="form-control form-control-sm"
               placeholder="Cari menu (judul, parent, route)...">
             @if(request()->filled('q'))
               <a href="{{ route('menus.index', ['ps' => request('ps', 5)]) }}" class="btn btn-light">Reset</a>
@@ -69,30 +71,39 @@
             @if ($menus->count())
               {{-- Table with sticky header --}}
               <div class="table-responsive mb-3 tableFixHead">
-                <table class="table table-hover align-middle">
-                  <thead class="table-light">
-                    <tr>
-                      <th style="width:72px;">No</th>
-                      <th>Title</th>
-                      <th>Parent</th>
-                      <th>Route</th>
-                      <th>Icon</th>
-                      <th style="width:180px;">Action</th>
-                    </tr>
+                <table class="table table-sm table-hover table-bordered align-middle mb-0">
+                    <thead class="table-light">
+                        <tr class="text-nowrap">
+                        <th style="width:60px;">No</th>
+                        <th>Title</th>
+                        <th>Parent</th>
+                        <th>Route</th>
+                        <th>Icon</th>
+                        <th style="width:150px;">Action</th>
+                        </tr>
                   </thead>
                   <tbody>
                   @foreach ($menus as $menu)
                     <tr>
-                      <td>{{ $menus->firstItem() + $loop->index }}</td>
-                      <td class="fw-semibold">{{ $menu->title }}</td>
-                      <td>{{ $menu->parent?->title ?? '-' }}</td>
-                      <td>{{ $menu->route }}</td>
-                      <td>
-                        <div class="text-muted text-truncate" style="max-width: 520px;">
-                          <i class="{{ $menu->icon }}"></i>
-                        </div>
-                      </td>
-                      <td>
+                      <td class="py-1">{{ $menus->firstItem() + $loop->index }}</td>
+                      <td class="fw-semibold py-1">{{ $menu->title }}</td>
+                      <td class="py-1">{{ $menu->parent?->title ?? '-' }}</td>
+                      <td class="py-1">{{ $menu->route }}</td>
+                      <td class="py-1">
+                            @if ($menu->icon_image)
+                                {{-- Jika menu menggunakan gambar ikon --}}
+                                <img src="{{ asset('storage/' . $menu->icon_image) }}"
+                                    alt="icon"
+                                    class="img-thumbnail"
+                                    style="height: 32px; width: 32px; object-fit: contain;">
+                            @elseif ($menu->icon)
+                                {{-- Jika pakai FontAwesome --}}
+                                <i class="{{ $menu->icon }} fs-4"></i>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
+                        </td>
+                      <td class="py-1">
                         <div class="btn-group">
                           <a class="btn btn-outline-secondary btn-sm" href="{{ route('menus.show', $menu->id) }}">
                             <i class="fa-solid fa-list"></i>
@@ -103,14 +114,23 @@
                             </a>
                           @endcan
                           @can('menu-delete')
-                            <button type="button"
-                              class="btn btn-outline-danger btn-sm btn-open-delete"
-                              data-url="{{ route('menus.destroy', $menu->id) }}"
-                              data-name="{{ $menu->title }}"
-                              data-bs-toggle="modal"
-                              data-bs-target="#confirmDeleteModal">
-                              <i class="fa-solid fa-trash"></i>
-                            </button>
+                            @if($menu->children->isEmpty())
+                                <button type="button"
+                                class="btn btn-outline-danger btn-sm btn-open-delete"
+                                data-url="{{ route('menus.destroy', $menu->id) }}"
+                                data-name="{{ $menu->title }}"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteModal">
+                                <i class="fa-solid fa-trash"></i>
+                                </button>
+                            @else
+                                <button type="button"
+                                class="btn btn-outline-secondary btn-sm"
+                                disabled
+                                title="Menu ini memiliki sub-menu dan tidak bisa dihapus">
+                                <i class="fa-solid fa-ban"></i>
+                                </button>
+                            @endif
                           @endcan
                         </div>
                       </td>
@@ -203,6 +223,8 @@
   </div>
 </div>
 
+@endsection
+
 @push('styles')
 <style>
   /* Sticky header ketika daftar panjang */
@@ -248,5 +270,3 @@
   });
 </script>
 @endpush
-
-@endsection

@@ -25,7 +25,7 @@ class MenuController extends Controller
 
     public function index(Request $request)
     {
-        $ps = (int) $request->get('ps', 5);
+        $ps = (int) $request->get('ps', 10);
         $q  = $request->get('q');
 
         // daftar (tabel) — biarkan seperti semula
@@ -54,7 +54,7 @@ class MenuController extends Controller
 
         $roots = $treeQuery->whereNull('parent_id')->get();
 
-        return view('pages.admin.menu.index', compact('menus', 'roots'));
+        return view('pages.admin.manage.menu.index', compact('menus', 'roots'));
     }
 
     /**
@@ -68,6 +68,7 @@ class MenuController extends Controller
         $icons = [
             'fa fa-home' => 'Home',
             'fa fa-user' => 'User',
+            'fa fa-users' => 'Users',
             'fa fa-cog' => 'Settings',
             'fa fa-list' => 'List',
             'fa fa-chart-bar' => 'Chart',
@@ -76,9 +77,28 @@ class MenuController extends Controller
             'fa fa-lock' => 'Lock',
             'fa fa-circle' => 'Circle',
             'fa fa-folder-open' => 'Folder Open',
+            'fa fa-file'         => 'File',
+            'fa fa-database'     => 'Database',
+            'fa fa-map-marker'   => 'Map Marker',
+            'fa fa-calendar'     => 'Calendar',
+            'fa fa-phone'        => 'Phone',
+            'fa fa-comments'     => 'Comments',
+            'fa fa-camera'       => 'Camera',
+            'fa fa-book'         => 'Book',
+            'fa fa-check'        => 'Check',
+            'fa fa-trash'        => 'Trash',
+            'fa fa-sitemap'          => 'Sitemap',
+            'fa fa-female'           => 'Female',
+            'fa fa-heartbeat'        => 'Heartbeat',
+            'fa fa-child'            => 'Child',
+            'fa fa-users-cog'        => 'Users Cog',
+            'fa fa-hands-helping'    => 'Hands Helping',
+            'fa fa-seedling'         => 'Seedling',
+            'fa fa-briefcase'        => 'Briefcase',
+            'fa fa-shield-alt'       => 'Shield-Alt',
         ];
 
-        return view('pages.admin.menu.create', compact('menus', 'icons'));
+        return view('pages.admin.manage.menu.create', compact('menus', 'icons'));
     }
 
 
@@ -90,6 +110,7 @@ class MenuController extends Controller
         $validated = $request->validate([
             'title'            => ['required', 'string', 'max:255'],
             'icon'             => ['nullable', 'string', 'max:255'],
+            'icon_image'       => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:1024'],
             'route'            => ['nullable', 'string', 'max:255'],
             'parent_id'        => ['nullable', 'integer', 'exists:menus,id'],
             'order'            => ['nullable', 'integer'],
@@ -98,19 +119,29 @@ class MenuController extends Controller
 
         $validated['order'] = $validated['order'] ?? 0;
 
+        // Validasi route
         if (!empty($validated['route']) && !RouteFacade::has($validated['route'])) {
-            return back()
-                ->withInput()
-                ->withErrors(['route' => 'Nama route tidak ditemukan di aplikasi. Pastikan rute sudah terdaftar.']);
+            return back()->withInput()->withErrors([
+                'route' => 'Nama route tidak ditemukan di aplikasi.'
+            ]);
         }
 
         DB::beginTransaction();
 
         try {
+            // Upload file icon
+            $imagePath = null;
+
+            if ($request->hasFile('icon_image')) {
+                $imagePath = $request->file('icon_image')->store('icon_menu', 'public');
+            }
+
+            // Simpan menu
             $menu = Menu::create([
                 'title'           => trim($validated['title']),
                 'icon'            => $validated['icon'] ?? null,
-                'route'           => !empty($validated['route']) ? trim($validated['route']) : null,
+                'icon_image'      => $imagePath,
+                'route'           => $validated['route'] ?? null,
                 'parent_id'       => $validated['parent_id'] ?? null,
                 'order'           => $validated['order'],
                 'permission_name' => $validated['permission_name'] ?? null,
@@ -131,17 +162,15 @@ class MenuController extends Controller
             }
 
             DB::commit();
+
         } catch (\Throwable $e) {
-            // Bisa juga log error: \Log::error($e);
             DB::rollBack();
-            return back()
-                ->withInput()
-                ->withErrors(['general' => 'Terjadi kesalahan saat menyimpan data.']);
+            return back()->withInput()->withErrors([
+                'general' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()
+            ]);
         }
 
-        return redirect()
-            ->route('menus.index')
-            ->with('success', 'Menu baru berhasil ditambahkan.');
+        return redirect()->route('menus.index')->with('success', 'Menu baru berhasil ditambahkan.');
     }
 
     /**
@@ -149,7 +178,7 @@ class MenuController extends Controller
      */
     public function show(Menu $menu)
     {
-        return view('pages.admin.menu.show',compact('menu'));
+        return view('pages.admin.manage.menu.show',compact('menu'));
     }
 
     /**
@@ -160,6 +189,7 @@ class MenuController extends Controller
         $icons = config('app.menu_icons',[
             'fa fa-home' => 'Home',
             'fa fa-user' => 'User',
+            'fa fa-users' => 'Users',
             'fa fa-cog' => 'Settings',
             'fa fa-list' => 'List',
             'fa fa-chart-bar' => 'Chart',
@@ -168,13 +198,32 @@ class MenuController extends Controller
             'fa fa-lock' => 'Lock',
             'fa fa-circle' => 'Circle',
             'fa fa-folder-open' => 'Folder Open',
+            'fa fa-file'         => 'File',
+            'fa fa-database'     => 'Database',
+            'fa fa-map-marker'   => 'Map Marker',
+            'fa fa-calendar'     => 'Calendar',
+            'fa fa-phone'        => 'Phone',
+            'fa fa-comments'     => 'Comments',
+            'fa fa-camera'       => 'Camera',
+            'fa fa-book'         => 'Book',
+            'fa fa-check'        => 'Check',
+            'fa fa-trash'        => 'Trash',
+            'fa fa-sitemap'          => 'Sitemap',
+            'fa fa-female'           => 'Female',
+            'fa fa-heartbeat'        => 'Heartbeat',
+            'fa fa-child'            => 'Child',
+            'fa fa-users-cog'        => 'Users Cog',
+            'fa fa-hands-helping'    => 'Hands Helping',
+            'fa fa-seedling'         => 'Seedling',
+            'fa fa-briefcase'        => 'Briefcase',
+            'fa fa-shield-alt'       => 'Shield-Alt',
         ]);
 
         $menus = Menu::where('id', '!=', $menu->id)
                  ->orderBy('title')
                  ->get(['id','title','icon']);
 
-        return view('pages.admin.menu.edit', compact('menu','icons','menus'));
+        return view('pages.admin.manage.menu.edit', compact('menu','icons','menus'));
     }
 
     /**
@@ -182,7 +231,6 @@ class MenuController extends Controller
      */
     public function update(Request $request, Menu $menu): RedirectResponse
     {
-        // 1) Validasi
         $validated = $request->validate([
             'title'           => ['required', 'string', 'max:255'],
             'icon'            => ['nullable', 'string', 'max:255'],
@@ -190,21 +238,19 @@ class MenuController extends Controller
             'parent_id'       => ['nullable', 'integer', 'exists:menus,id'],
             'order'           => ['nullable', 'integer'],
             'permission_name' => ['nullable', 'string', 'max:255'],
+            'icon_image'      => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:1024'],
         ]);
 
-        // parent tidak boleh dirinya sendiri
         if (!empty($validated['parent_id']) && (int) $validated['parent_id'] === (int) $menu->id) {
             return back()->withInput()->withErrors(['parent_id' => 'Parent tidak boleh item yang sama.']);
         }
 
-        $validated['order'] = $validated['order'] ?? 0;
-
-        // 2) Cek route bila diisi
         if (!empty($validated['route']) && !RouteFacade::has($validated['route'])) {
             return back()->withInput()->withErrors(['route' => 'Nama route tidak ditemukan di aplikasi.']);
         }
 
-        // 3) Hitung base permission lama & baru
+        $validated['order'] = $validated['order'] ?? 0;
+
         $oldBase = $menu->permission_name ? preg_replace('/-list$/i', '', trim($menu->permission_name)) : null;
         $newBase = !empty($validated['permission_name'])
             ? preg_replace('/-list$/i', '', trim($validated['permission_name']))
@@ -219,15 +265,27 @@ class MenuController extends Controller
 
         DB::beginTransaction();
         try {
-            // 5) Update menu
+
+            if ($request->hasFile('icon_image')) {
+
+                // hapus file lama jika ada
+                if ($menu->icon_image && Storage::disk('public')->exists($menu->icon_image)) {
+                    Storage::disk('public')->delete($menu->icon_image);
+                }
+
+                // simpan file baru
+                $validated['icon_image'] = $request->file('icon_image')->store('icon_menu', 'public');
+            }
+
+            // === Update menu ===
             $menu->update([
                 'title'           => trim($validated['title']),
                 'icon'            => $validated['icon'] ?? null,
-                'route'           => !empty($validated['route']) ? trim($validated['route']) : null,
+                'route'           => $validated['route'] ?? null,
                 'parent_id'       => $validated['parent_id'] ?? null,
                 'order'           => $validated['order'],
-                // simpan permission_name seperti input (mis. "menu-list")
                 'permission_name' => $validated['permission_name'] ?? null,
+                'icon_image'      => $validated['icon_image'] ?? $menu->icon_image,
             ]);
 
             // 6) Kelola permissions
@@ -259,9 +317,7 @@ class MenuController extends Controller
             return back()->withInput()->withErrors(['general' => 'Terjadi kesalahan: '.$e->getMessage()]);
         }
 
-        return redirect()
-            ->route('menus.index')
-            ->with('success', 'Menu berhasil diperbarui'.($shouldHavePerms ? ' beserta permissions.' : '.'));
+        return redirect()->route('menus.index')->with('success', 'Menu berhasil diperbarui.');
     }
 
 
