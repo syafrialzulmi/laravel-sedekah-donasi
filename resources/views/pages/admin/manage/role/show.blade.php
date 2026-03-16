@@ -21,7 +21,7 @@
         <div class="card">
             <div class="card-body">
                 {{-- Role name --}}
-                <div class="row mb-3">
+                <div class="row mb-3 small">
                     <div class="col-md-3 col-4 fw-semibold text-muted">Name</div>
                     <div class="col-md-9 col-8">
                         <span class="badge bg-label-primary px-3 py-2 fs-6">{{ $role->name }}</span>
@@ -29,7 +29,7 @@
                 </div>
 
                 {{-- Permissions (group by menu) --}}
-                <div class="row">
+                <div class="row small">
                     <div class="col-md-3 col-4 fw-semibold text-muted">Permissions</div>
 
                     <div class="col-md-9 col-8">

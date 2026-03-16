@@ -46,14 +46,23 @@
             </a>
           @endcan
           @can('menu-delete')
-            <button type="button"
-              class="btn btn-outline-danger btn-sm btn-open-delete"
-              data-url="{{ route('menus.destroy', $node->id) }}"
-              data-name="{{ $node->title }}"
-              data-bs-toggle="modal"
-              data-bs-target="#confirmDeleteModal">
-              <i class="fa-solid fa-trash"></i>
-            </button>
+            @if($node->children->isEmpty())
+                <button type="button"
+                class="btn btn-outline-danger btn-sm btn-open-delete"
+                data-url="{{ route('menus.destroy', $node->id) }}"
+                data-name="{{ $node->title }}"
+                data-bs-toggle="modal"
+                data-bs-target="#confirmDeleteModal">
+                <i class="fa-solid fa-trash"></i>
+                </button>
+            @else
+                <button type="button"
+                class="btn btn-outline-secondary btn-sm"
+                disabled
+                title="Menu ini memiliki sub-menu dan tidak bisa dihapus">
+                <i class="fa-solid fa-ban"></i>
+                </button>
+            @endif
           @endcan
         </div>
       </div>

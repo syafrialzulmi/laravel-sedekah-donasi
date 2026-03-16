@@ -34,9 +34,9 @@ class RoleController extends Controller
     public function index(Request $request): View
     {
         $allowedPageSizes = [5, 10, 20, 50];
-        $ps = (int) $request->input('ps', 5);
+        $ps = (int) $request->input('ps', 10);
         if (!in_array($ps, $allowedPageSizes, true)) {
-            $ps = 5;
+            $ps = 10;
         }
 
         $q = trim((string) $request->input('q', ''));
@@ -49,7 +49,7 @@ class RoleController extends Controller
             ->paginate($ps)
             ->appends($request->only('ps', 'q')); // bawa query di pagination
 
-        return view('pages.admin.role.index', [
+        return view('pages.admin.manage.role.index', [
             'roles' => $roles,
             'i'     => ($roles->currentPage() - 1) * $roles->perPage(),
         ]);
@@ -68,7 +68,7 @@ class RoleController extends Controller
             ->get();
 
 
-        return view('pages.admin.role.create', compact('permission'));
+        return view('pages.admin.manage.role.create', compact('permission'));
     }
 
     /**
@@ -116,7 +116,7 @@ class RoleController extends Controller
         // kelompokkan per menu_id
         $groups = $rolePermissions->groupBy('menu_id');
 
-        return view('pages.admin.role.show', compact('role','rolePermissions','groups'));
+        return view('pages.admin.manage.role.show', compact('role','rolePermissions','groups'));
     }
 
 
@@ -142,7 +142,7 @@ class RoleController extends Controller
             ->pluck('permission_id')
             ->all();
 
-        return view('pages.admin.role.edit', compact('role','permission','rolePermissionIds'));
+        return view('pages.admin.manage.role.edit', compact('role','permission','rolePermissionIds'));
     }
 
 

@@ -23,23 +23,23 @@
 
             {{-- Toolbar: server-side filter --}}
             <form id="filterForm" method="GET" class="d-flex flex-wrap align-items-center gap-2 mb-3">
-            <div class="input-group" style="max-width: 420px;">
+            <div class="input-group input-group-sm" style="max-width: 420px;">
                 <span class="input-group-text"><i class="fa fa-search"></i></span>
                 <input
                 type="text"
                 name="q"
                 value="{{ request('q') }}"
-                class="form-control"
+                class="form-control form-control-sm"
                 placeholder="Cari role...">
                 @if(request()->filled('q'))
-                <a href="{{ route('roles.index', ['ps' => request('ps', 5)]) }}" class="btn btn-light">Reset</a>
+                <a href="{{ route('roles.index', ['ps' => request('ps', 10)]) }}" class="btn btn-light btn-sm">Reset</a>
                 @endif
             </div>
 
             <div class="ms-auto d-flex align-items-center gap-2">
                 <span class="text-muted small d-none d-sm-inline">Tampilkan</span>
                 <select name="ps" id="pageSize" class="form-select form-select-sm" style="width:auto;">
-                @php $ps = (int) request('ps', 5); @endphp
+                @php $ps = (int) request('ps', 10); @endphp
                 <option value="5"  {{ $ps===5  ? 'selected' : '' }}>5</option>
                 <option value="10" {{ $ps===10 ? 'selected' : '' }}>10</option>
                 <option value="20" {{ $ps===20 ? 'selected' : '' }}>20</option>
@@ -50,22 +50,23 @@
 
             @if ($roles->count())
             <div class="table-responsive mb-3 tableFixHead">
-                <table class="table table-hover align-middle">
+                <table class="table table-sm table-hover table-bordered align-middle small mb-0">
                 <thead class="table-light">
-                    <tr>
-                    <th style="width:72px;">No</th>
+                    <tr class="text-nowrap">
+                    <th style="width:60px;">No</th>
                     <th>Name</th>
                     <th>Guard Name</th>
-                    <th style="width:200px;">Action</th>
+                    <th style="width:150px;">Action</th>
                     </tr>
                 </thead>
                 <tbody id="roleTableBody">
+
                 @foreach ($roles as $role)
                     <tr class="role-row">
-                    <td>{{ $roles->firstItem() + $loop->index }}</td>
-                    <td class="fw-semibold">{{ $role->name }}</td>
-                    <td class="text-muted">{{ $role->guard_name }}</td>
-                    <td>
+                    <td class="py-1">{{ $roles->firstItem() + $loop->index }}</td>
+                    <td class="fw-semibold py-1">{{ $role->name }}</td>
+                    <td class="text-muted py-1">{{ $role->guard_name }}</td>
+                    <td class="py-1">
                         <div class="btn-group">
                         <a class="btn btn-outline-secondary btn-sm" href="{{ route('roles.show',$role->id) }}">
                             <i class="fa-solid fa-list"></i>
@@ -96,7 +97,7 @@
             {{-- Pagination --}}
             <div class="d-flex justify-content-between align-items-center">
                 <small class="text-muted">
-                Menampilkan {{ $roles->firstItem() }}–{{ $roles->lastItem() }} dari {{ $roles->total() }}
+                Menampilkan {{ $roles->firstItem() }}-{{ $roles->lastItem() }} dari {{ $roles->total() }}
                 @if(request()->filled('q')) • hasil untuk: “{{ request('q') }}” @endif
                 </small>
                 {!! $roles->appends(request()->only('ps','q'))->links('pagination::bootstrap-5') !!}
