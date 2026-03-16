@@ -5,11 +5,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\DasborController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\UserController;
+
+use App\Http\Controllers\Manage\RoleController;
+use App\Http\Controllers\Manage\UserController;
+use App\Http\Controllers\Manage\MenuController;
+use App\Http\Controllers\Manage\SettingAppController;
+
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\MenuController;
-use App\Http\Controllers\SettingAppController;
 use App\Http\Controllers\CustomerController;
 
 use Mews\Captcha\Facades\Captcha;
@@ -47,6 +49,10 @@ Route::group(['middleware' => ['auth']], function() {
         Route::delete('/setting-app', [SettingAppController::class, 'clear'])->name('setting-app.clear');
 
         // Route::resource('customers', CustomerController::class);
+    });
+
+    Route::prefix('admin/master')->group(function () {
+
     });
 
 });

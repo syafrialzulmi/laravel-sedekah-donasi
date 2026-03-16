@@ -42,12 +42,12 @@
 
   @php
     $grouped = $permission
-      ->groupBy(function ($p) {
-        return optional($p->menu->parent)->title ?? 'Tanpa Parent';
-      })
-      ->map(function ($parentGroup) {
-        return $parentGroup->groupBy('menu_id');
-      });
+        ->groupBy(function ($p) {
+            return optional($p->menu->parent)->title ?? 'Tanpa Parent';
+        })
+        ->map(function ($parentGroup) {
+            return $parentGroup->groupBy('menu_id');
+        });
 
     $selectedPermissionIds = collect(old('permission', $rolePermissionIds ?? []))
       ->map(fn($v) => (int) $v)

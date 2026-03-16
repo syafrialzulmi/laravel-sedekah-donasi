@@ -1,10 +1,9 @@
 <?php
+namespace App\Http\Controllers\Manage;
 
-namespace App\Http\Controllers;
-
+use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use DB;
@@ -62,7 +61,8 @@ class RoleController extends Controller
      */
     public function create(): View
     {
-        $permission = \App\Models\Permission::with('menu')
+        $permission = \App\Models\Permission::with('menu:id,title,parent_id',
+        'menu.parent:id,title')
             ->orderBy('menu_id')
             ->orderBy('name')
             ->get();
@@ -131,7 +131,8 @@ class RoleController extends Controller
         $role = \Spatie\Permission\Models\Role::findOrFail($id);
 
         // Ambil semua permission beserta menu untuk grouping
-        $permission = \App\Models\Permission::with('menu:id,title')
+        $permission = \App\Models\Permission::with('menu:id,title,parent_id',
+        'menu.parent:id,title')
             ->orderBy('menu_id')
             ->orderBy('name')
             ->get();
