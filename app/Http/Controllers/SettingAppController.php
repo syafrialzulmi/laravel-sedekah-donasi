@@ -20,7 +20,7 @@ class SettingAppController extends Controller
     public function index()
     {
         $setting = SettingApp::first();
-        return view('pages.admin.setting_app.index', compact('setting'));
+        return view('pages.admin.manage.setting_app.index', compact('setting'));
     }
 
     public function store(Request $request)

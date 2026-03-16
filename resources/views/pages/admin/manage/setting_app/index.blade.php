@@ -49,25 +49,25 @@
 
         <div class="col-md-6">
           <label class="form-label">Nama Aplikasi <span class="text-danger">*</span></label>
-          <input type="text" name="name_app" class="form-control" value="{{ old('name_app', $setting->name_app ?? '') }}" required>
+          <input type="text" name="name_app" class="form-control form-control-sm" value="{{ old('name_app', $setting->name_app ?? '') }}" required>
         </div>
 
         <div class="col-md-6">
             <label class="form-label">Singkatan Nama Aplikasi <span class="text-danger">*</span></label>
             <input type="text" name="name_app_singkatan"
-                    class="form-control"
+                    class="form-control form-control-sm"
                     value="{{ old('name_app_singkatan', $setting->name_app_singkatan ?? '') }}" required>
             <small class="text-muted">Contoh: "SIAKAD", "POS", dll.</small>
         </div>
 
         <div class="col-12">
           <label class="form-label">Deskripsi</label>
-          <textarea name="deskripsi" rows="4" class="form-control" placeholder="Deskripsi singkat aplikasi">{{ old('deskripsi', $setting->deskripsi ?? '') }}</textarea>
+          <textarea name="deskripsi" rows="4" class="form-control form-control-sm" placeholder="Deskripsi singkat aplikasi">{{ old('deskripsi', $setting->deskripsi ?? '') }}</textarea>
         </div>
 
         <div class="col-md-4">
           <label class="form-label">Logo</label>
-          <input type="file" name="logo" class="form-control" accept=".png,.jpg,.jpeg,.webp,.svg">
+          <input type="file" name="logo" class="form-control form-control-sm" accept=".png,.jpg,.jpeg,.webp,.svg">
           @if($setting?->logo_url)
             <div class="mt-2">
               <div class="text-muted small">Pratinjau saat ini:</div>
@@ -78,7 +78,7 @@
 
         <div class="col-md-4">
           <label class="form-label">Banner</label>
-          <input type="file" name="banner" class="form-control" accept=".png,.jpg,.jpeg,.webp,.svg">
+          <input type="file" name="banner" class="form-control form-control-sm" accept=".png,.jpg,.jpeg,.webp,.svg">
           @if($setting?->banner_url)
             <div class="mt-2">
               <div class="text-muted small">Pratinjau saat ini:</div>
@@ -89,7 +89,7 @@
 
         <div class="col-md-4">
           <label class="form-label">Favicon</label>
-          <input type="file" name="favicon" class="form-control" accept=".png,.jpg,.jpeg,.webp,.ico,.svg">
+          <input type="file" name="favicon" class="form-control form-control-sm" accept=".png,.jpg,.jpeg,.webp,.ico,.svg">
           @if($setting?->favicon_url)
             <div class="mt-2 d-flex align-items-center gap-3">
               <div>
