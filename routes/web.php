@@ -39,7 +39,11 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::prefix('admin/manage')->group(function () {
         Route::resource('/roles', RoleController::class);
+
+        Route::get('/profilku', [UserController::class, 'showProfile'])->name('profilku');
+        Route::post('/profilku/update', [UserController::class, 'updateProfile'])->name('profilku.update');
         Route::resource('/users', UserController::class);
+        
         Route::resource('/products', ProductController::class);
         Route::resource('/menus', MenuController::class);
 

@@ -66,7 +66,7 @@
                 <div class="dropdown-divider"></div>
             </li>
             <li>
-                <a class="dropdown-item" href="">
+                <a class="dropdown-item" href="{{ route('profilku') }}">
                 <i class="bx bx-user me-2"></i>
                 <span class="align-middle">Profil Ku</span>
                 </a>

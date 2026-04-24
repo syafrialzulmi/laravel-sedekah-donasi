@@ -103,8 +103,16 @@ class SettingAppController extends Controller
 
     private function storeUploadedFile(Request $request, string $field): ?string
     {
-        if (!$request->hasFile($field)) return null;
-        // path di disk "public"
-        return $request->file($field)->store('setting-app', 'public');
+        if (!$request->hasFile($field)) {
+            return null;
+        }
+
+        $file = $request->file($field);
+
+        if (!$file->isValid()) {
+            return null;
+        }
+
+        return Storage::disk('public')->putFile('setting-app', $file);
     }
 }
