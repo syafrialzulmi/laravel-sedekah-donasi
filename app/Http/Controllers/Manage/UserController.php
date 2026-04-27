@@ -157,4 +157,57 @@ class UserController extends Controller
         $user = auth()->user();
         return view('pages.admin.manage.user.profilku', compact('user'));
     }
+
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username'      => 'nullable|unique:users,username,' . $user->id,
+            'email'     => 'required|email|unique:users,email,' . $user->id,
+            'no_hp' => 'nullable|string|max:20',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:1024',
+            'password'  => 'nullable|same:confirm-password|min:6',
+        ]);
+
+        $data = $request->only(['name', 'email', 'no_hp', 'username']);
+
+        if ($request->hasFile('foto')) {
+            $path = $request->file('foto')->store('foto_user', 'public');
+            $data['foto'] = $path;
+        }
+
+        // Jika password diisi, hash; jika tidak, hapus dari array
+        // if (!empty($data['password'])) {
+        //     $data['password'] = Hash::make($input['password']);
+        // } else {
+        //     unset($data['password']);
+        // }
+
+        // Jika user masih aktif == 0 → password WAJIB diisi
+        if ($user->is_active == 0) {
+
+            // Validasi ulang: password wajib
+            $request->validate([
+                'password' => 'required|same:confirm-password|min:6',
+            ], [
+                'password.required' => 'Anda wajib mengganti password karena akun baru dibuat.',
+            ]);
+
+            $data['password'] = Hash::make($request->password);
+            $data['is_active'] = 1;
+
+        } else {
+            // Jika user sudah aktif → password opsional
+            if (!empty($request->password)) {
+                $data['password'] = Hash::make($request->password);
+            }
+        }
+
+        $data['updated_by'] = auth()->id();
+        $user->update($data);
+
+        return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
+    }
 }

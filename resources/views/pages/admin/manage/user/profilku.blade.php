@@ -10,20 +10,7 @@
         <div class="row">
             {{-- Kolom Kiri --}}
             <div class="col-md-4 border-end small">
-                <h6 class="text-muted mb-3">Informasi Wilayah</h6>
-
-                @php
-                    function levelBadge($level) {
-                        return match ($level) {
-                            'admin'      => 'bg-danger',
-                            'pmd'        => 'bg-primary',
-                            'pkk'        => 'bg-warning text-dark',
-                            'kecamatan'  => 'bg-info text-dark',
-                            'desa'       => 'bg-success',
-                            default      => 'bg-secondary',
-                        };
-                    }
-                @endphp
+                <h6 class="text-muted mb-3">Informasi Umum</h6>
 
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Role</label>
