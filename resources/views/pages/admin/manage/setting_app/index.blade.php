@@ -68,10 +68,10 @@
         <div class="col-md-4">
           <label class="form-label">Logo</label>
           <input type="file" name="logo" class="form-control form-control-sm" accept=".png,.jpg,.jpeg,.webp,.svg">
-          @if($setting?->logo_url)
+          @if($setting?->logo)
             <div class="mt-2">
               <div class="text-muted small">Pratinjau saat ini:</div>
-              <img src="{{ $setting->logo_url }}" alt="logo" class="img-thumbnail" style="max-height:120px">
+              <img src="{{ asset('storage/' . $setting->logo) }}" alt="logo" class="img-thumbnail" style="max-height:120px">
             </div>
           @endif
         </div>
@@ -79,10 +79,10 @@
         <div class="col-md-4">
           <label class="form-label">Banner</label>
           <input type="file" name="banner" class="form-control form-control-sm" accept=".png,.jpg,.jpeg,.webp,.svg">
-          @if($setting?->banner_url)
+          @if($setting?->banner)
             <div class="mt-2">
               <div class="text-muted small">Pratinjau saat ini:</div>
-              <img src="{{ $setting->banner_url }}" alt="banner" class="img-thumbnail" style="max-height:120px">
+              <img src="{{ asset('storage/' . $setting->banner) }}" alt="banner" class="img-thumbnail" style="max-height:120px">
             </div>
           @endif
         </div>
@@ -90,11 +90,11 @@
         <div class="col-md-4">
           <label class="form-label">Favicon</label>
           <input type="file" name="favicon" class="form-control form-control-sm" accept=".png,.jpg,.jpeg,.webp,.ico,.svg">
-          @if($setting?->favicon_url)
+          @if($setting?->favicon)
             <div class="mt-2 d-flex align-items-center gap-3">
               <div>
                 <div class="text-muted small">Pratinjau saat ini:</div>
-                <img src="{{ $setting->favicon_url }}" alt="favicon" class="img-thumbnail" style="max-height:64px; max-width:64px;">
+                <img src="{{ asset('storage/' . $setting->favicon) }}" alt="favicon" class="img-thumbnail" style="max-height:64px; max-width:64px;">
               </div>
             </div>
           @endif
