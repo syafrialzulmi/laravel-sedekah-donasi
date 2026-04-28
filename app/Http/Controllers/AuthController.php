@@ -6,41 +6,50 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
+
+use App\Models\User;
 
 class AuthController extends Controller
 {
-    // public function showFormRegistrasi()
-    // {
+    public function showFormRegistrasi()
+    {
 
-    //     return view('pages.auth.registrasi');
-    // }
+        return view('pages.auth.registrasi');
+    }
 
-    // public function submitFormRegistrasi(Request $request)
-    // {
-    //     $request->validate([
-    //         'nama_lengkap' => 'required|string',
-    //         'email' => 'required|email|unique:users,email',
-    //         'password' => 'required|string',
-    //     ]);
+    public function submitFormRegistrasi(Request $request)
+    {
+        $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6|confirmed',
+            'captcha' => 'required|captcha',
+            'terms' => 'accepted'
+        ]);
 
-    //     try {
-    //         // Buat user
-    //         $user = User::create([
-    //             'name' => $request->nama_lengkap,
-    //             'email' => $request->email,
-    //             'password' => Hash::make($request->password),
-    //         ]);
+        DB::beginTransaction();
 
-    //         return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login.');
+        try {
+            User::create([
+                'name' => $request->nama_lengkap,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
 
-    //     } catch (\Exception $e) {
-    //         DB::rollBack(); // Batalkan transaksi jika ada error
+            DB::commit();
 
-    //         return redirect()->back()
-    //             ->withInput()
-    //             ->withErrors(['error' => 'Terjadi kesalahan saat registrasi: ' . $e->getMessage()]);
-    //     }
-    // }
+            return redirect()->route('login')
+                ->with('success', 'Registrasi berhasil! Silakan login.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return back()
+                ->withInput()
+                ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
+    }
 
     public function showFormLogin(Request $request)
     {
@@ -139,5 +148,66 @@ class AuthController extends Controller
 
         // Arahkan user ke halaman login setelah logout
         return redirect()->route('login')->with('success', 'Anda telah berhasil logout.');
+    }
+
+    public function showFormForgot()
+    {
+
+        return view('pages.auth.forgot');
+    }
+
+    public function sendResetLink(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        // Kirim link reset password
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return back()->with('success', 'Link reset password berhasil dikirim ke email Anda.');
+        }
+
+        return back()->withErrors([
+            'email' => 'Gagal mengirim email. Silakan coba lagi.'
+        ]);
+    }
+
+    // Tampilkan form reset
+    public function showResetForm(Request $request, $token)
+    {
+        return view('pages.auth.reset-password', [
+            'token' => $token,
+            'email' => $request->email
+        ]);
+    }
+
+    // Proses reset password
+    public function reset(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->save();
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return redirect()->route('login')
+                ->with('success', 'Password berhasil diubah.');
+        }
+
+        return back()->withErrors(['email' => 'Token tidak valid atau kadaluarsa']);
     }
 }

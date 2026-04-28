@@ -30,6 +30,15 @@ Route::middleware('guest')->group(function () {
             'url' => captcha_src('flat'), // hanya URL gambar
         ]);
     });
+    Route::get('/lupa-password', [AuthController::class, 'showFormForgot'])->name('lupa-password');
+    Route::post('/lupa-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+    // Form reset password
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])
+        ->name('password.reset');
+
+    // Proses update password
+    Route::post('/reset-password', [AuthController::class, 'reset'])
+        ->name('password.update');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

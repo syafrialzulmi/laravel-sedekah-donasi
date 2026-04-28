@@ -112,7 +112,7 @@
         <div class="mb-3 form-password-toggle">
             <div class="d-flex justify-content-between">
             <label class="form-label" for="password">Password</label>
-            <a href="auth-forgot-password-basic.html">
+            <a href="{{ route('lupa-password') }}">
                 <small>Lupa Password?</small>
             </a>
             </div>
@@ -154,12 +154,12 @@
         </div>
         </form>
 
-        {{-- <p class="text-center">
+        <p class="text-center">
         <span>Baru di platform kami?</span>
         <a href="{{ route('registrasi') }}">
             <span>Buat akun sekarang</span>
         </a>
-        </p> --}}
+        </p>
     </div>
 </div>
 <!-- /Register -->
