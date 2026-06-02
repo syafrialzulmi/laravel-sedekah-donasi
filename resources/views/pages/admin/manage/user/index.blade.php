@@ -13,9 +13,11 @@
             <h5 class="mb-0">Pengguna</h5>
             <small class="text-muted">Daftar pengguna sistem.</small>
         </div>
-        <a href="{{ route('users.create') }}" class="btn btn-primary rounded-pill d-flex align-items-center">
-            <i class="bx bx-plus me-1"></i> Tambah
-        </a>
+        @can('user-create')
+            <a href="{{ route('users.create') }}" class="btn btn-primary rounded-pill d-flex align-items-center">
+                <i class="bx bx-plus me-1"></i> Tambah
+            </a>
+        @endcan
         </div>
 
         <div class="card">

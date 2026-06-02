@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer('components.sidebar', function ($view) {
             $userId = auth()->id() ?: 0;
 
-            $tree = Cache::remember("menu.tree.user.$userId", now()->addMinutes(10), function () {
+            $tree = Cache::remember("menu.tree.user.$userId", now()->addSeconds(10), function () {
                 // Ambil semua top-level + anak-anaknya (2 tingkat; tambah 'children.children' kalau perlu 3 tingkat)
                 $tops = Menu::with([
                         'children' => fn($q) => $q->orderBy('order')
