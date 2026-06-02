@@ -56,6 +56,9 @@ Route::group(['middleware' => ['auth']], function() {
         Route::resource('/products', ProductController::class);
         Route::resource('/menus', MenuController::class);
 
+        Route::get('/setting-app/desa-by-kecamatan/{kecamatan_id}', [SettingAppController::class, 'getDesaByKecamatan'])
+            ->name('desa.by.kecamatan');
+
         Route::get('/setting-app', [SettingAppController::class, 'index'])->name('setting-app.index');
         Route::post('/setting-app', [SettingAppController::class, 'store'])->name('setting-app.store');
         Route::put('/setting-app/{settingApp}', [SettingAppController::class, 'update'])->name('setting-app.update');

@@ -100,6 +100,26 @@
           @endif
         </div>
 
+        <div class="col-md-6">
+            <label class="form-label">Kecamatan</label>
+            <select name="kecamatan_id" id="kecamatan_id" class="form-select form-select-sm">
+                <option value="">-- Pilih Kecamatan --</option>
+                @foreach($kecamatans as $kecamatan)
+                    <option value="{{ $kecamatan->id }}"
+                        {{ old('kecamatan_id', $setting->kecamatan_id ?? '') == $kecamatan->id ? 'selected' : '' }}>
+                        {{ $kecamatan->kecamatan }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Desa</label>
+            <select name="desa_id" id="desa_id" class="form-select form-select-sm">
+                <option value="">-- Pilih Desa --</option>
+            </select>
+        </div>
+
         <div class="col-12">
             @if($setting)
                 @can('setting-app-edit')
@@ -152,3 +172,96 @@
   </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+
+    let selectedDesa = "{{ old('desa_id', $setting->desa_id ?? '') }}";
+
+    function loadDesa(kecamatanId, selected = null) {
+
+        $.get(
+            "{{ url('admin/manage/setting-app/desa-by-kecamatan') }}/" + kecamatanId,
+            function(response) {
+
+                let options = '<option value="">-- Pilih Desa --</option>';
+
+                $.each(response, function(index, desa) {
+
+                    let selectedAttr =
+                        selected == desa.id
+                            ? 'selected'
+                            : '';
+
+                    options += `
+                        <option value="${desa.id}" ${selectedAttr}>
+                            ${desa.desa}
+                        </option>
+                    `;
+                });
+
+                $('#desa_id').html(options);
+            }
+        );
+    }
+
+    let kecamatanAwal = $('#kecamatan_id').val();
+
+    if (kecamatanAwal) {
+        loadDesa(kecamatanAwal, selectedDesa);
+    }
+
+    $('#kecamatan_id').change(function() {
+        loadDesa($(this).val());
+    });
+
+});
+</script>
+
+<script>
+$(document).ready(function() {
+
+    $('#kecamatan_id').on('change', function() {
+
+        let kecamatanId = $(this).val();
+
+        $('#desa_id').html(
+            '<option value="">Memuat data desa...</option>'
+        );
+
+        if (kecamatanId == '') {
+            $('#desa_id').html(
+                '<option value="">-- Pilih Desa --</option>'
+            );
+            return;
+        }
+
+        $.ajax({
+            url: "{{ url('admin/manage/setting-app/desa-by-kecamatan') }}/" + kecamatanId,
+            type: "GET",
+            dataType: "json",
+            success: function(response) {
+
+                let options = '<option value="">-- Pilih Desa --</option>';
+
+                $.each(response, function(index, desa) {
+                    options += `
+                        <option value="${desa.id}">
+                            ${desa.desa}
+                        </option>
+                    `;
+                });
+
+                $('#desa_id').html(options);
+            },
+            error: function() {
+                alert('Gagal mengambil data desa');
+            }
+        });
+
+    });
+
+});
+</script>
+@endpush

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Manage;
 use App\Http\Controllers\Controller;
 
 use App\Models\SettingApp;
+use App\Models\Desa;
+use App\Models\Kecamatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -21,7 +23,10 @@ class SettingAppController extends Controller
     public function index()
     {
         $setting = SettingApp::first();
-        return view('pages.admin.manage.setting_app.index', compact('setting'));
+        $kecamatans = Kecamatan::orderBy('kecamatan')->get();
+        $desas = Desa::orderBy('desa')->get();
+
+        return view('pages.admin.manage.setting_app.index', compact('setting','kecamatans','desas'));
     }
 
     public function store(Request $request)
@@ -34,6 +39,8 @@ class SettingAppController extends Controller
             'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp,svg', 'max:2048'],
             'banner' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp,svg', 'max:4096'],
             'favicon' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp,ico,svg', 'max:1024'],
+            'kecamatan_id' => 'nullable|exists:kecamatan,id',
+            'desa_id' => 'nullable|exists:desa,id',
         ]);
 
         if (SettingApp::exists()) {
@@ -63,6 +70,8 @@ class SettingAppController extends Controller
             'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp,svg', 'max:2048'],
             'banner' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp,svg', 'max:4096'],
             'favicon' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp,ico,svg', 'max:1024'],
+            'kecamatan_id' => 'nullable|exists:kecamatan,id',
+            'desa_id' => 'nullable|exists:desa,id',
         ]);
 
         $data = $validated;
@@ -114,5 +123,12 @@ class SettingAppController extends Controller
         }
 
         return Storage::disk('public')->putFile('setting-app', $file);
+    }
+
+    public function getDesaByKecamatan($kecamatan_id)
+    {
+        return Desa::where('kecamatan_id', $kecamatan_id)
+            ->orderBy('desa')
+            ->get(['id', 'desa']);
     }
 }

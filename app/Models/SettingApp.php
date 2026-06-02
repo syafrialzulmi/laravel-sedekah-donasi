@@ -11,5 +11,16 @@ class SettingApp extends Model
 
     protected $fillable = [
         'name_app', 'deskripsi', 'logo', 'banner', 'favicon', 'name_app_singkatan',
+        'desa_id', 'kecamatan_id',
     ];
+
+    public function kecamatan()
+    {
+        return $this->belongsTo(Kecamatan::class);
+    }
+
+    public function desa()
+    {
+        return $this->belongsTo(Desa::class);
+    }
 }
