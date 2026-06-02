@@ -12,9 +12,7 @@ use App\Http\Controllers\Manage\MenuController;
 use App\Http\Controllers\Manage\SettingAppController;
 
 use App\Http\Controllers\ProgramSedekahController;
-
-// use App\Http\Controllers\ProductController;
-// use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DonaturController;
 
 use Mews\Captcha\Facades\Captcha;
 
@@ -55,7 +53,6 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/profilku/update', [UserController::class, 'updateProfile'])->name('profilku.update');
         Route::resource('/users', UserController::class);
         
-        // Route::resource('/products', ProductController::class);
         Route::resource('/menus', MenuController::class);
 
         Route::get('/setting-app/desa-by-kecamatan/{kecamatan_id}', [SettingAppController::class, 'getDesaByKecamatan'])
@@ -66,11 +63,11 @@ Route::group(['middleware' => ['auth']], function() {
         Route::put('/setting-app/{settingApp}', [SettingAppController::class, 'update'])->name('setting-app.update');
         Route::delete('/setting-app', [SettingAppController::class, 'clear'])->name('setting-app.clear');
 
-        // Route::resource('customers', CustomerController::class);
     });
 
     Route::prefix('admin/master')->group(function () {
         Route::resource('/program-sedekah', ProgramSedekahController::class);
+        Route::resource('/donatur', DonaturController::class);
     });
 
 });
