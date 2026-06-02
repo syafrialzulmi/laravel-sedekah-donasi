@@ -74,12 +74,12 @@
                 <table class="table table-sm table-hover table-bordered align-middle mb-0">
                     <thead class="table-light">
                         <tr class="text-nowrap">
-                        <th style="width:60px;">No</th>
-                        <th>Title</th>
-                        <th>Parent</th>
-                        <th>Route</th>
-                        <th>Icon</th>
-                        <th style="width:150px;">Action</th>
+                          <th style="width:60px;">No</th>
+                          <th>Title</th>
+                          <th>Parent</th>
+                          <th>Route</th>
+                          <th>Icon</th>
+                          <th style="width:150px;">Action</th>
                         </tr>
                   </thead>
                   <tbody>
@@ -88,7 +88,18 @@
                       <td class="py-1">{{ $menus->firstItem() + $loop->index }}</td>
                       <td class="fw-semibold py-1">{{ $menu->title }}</td>
                       <td class="py-1">{{ $menu->parent?->title ?? '-' }}</td>
-                      <td class="py-1">{{ $menu->route }}</td>
+                      <td class="py-1">    
+                          @if($menu->route)
+                              <span class="text-dark">
+                                  {{ $menu->route }}
+                              </span>
+                          @endif
+                          @if($menu->permission_name)
+                              <small class="text-muted">
+                                  {{ $menu->permission_name }}
+                              </small>
+                          @endif
+                      </td>                      
                       <td class="py-1">
                             @if ($menu->icon_image)
                                 {{-- Jika menu menggunakan gambar ikon --}}

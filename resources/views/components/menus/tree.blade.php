@@ -29,12 +29,25 @@
           <i class="{{ $node->icon }}"></i>
         @endif
 
-        <div class="d-flex align-items-center flex-wrap gap-2">
-          <span class="fw-semibold">{{ $node->title }}</span>
-          @if(!empty($node->route))
-            <code class="text-muted">{{ $node->route }}</code>
-          @endif
-        </div>
+        <div class="d-flex">
+    
+        <span class="fw-semibold">
+            {{ $node->order }}. {{ $node->title }}
+        </span>
+
+        &nbsp; | &nbsp;
+
+        <small class="text-muted">
+            @if(!empty($node->route))
+                {{ $node->route }}
+            @endif
+
+            @if(!empty($node->permission_name))
+                • {{ $node->permission_name }}
+            @endif
+        </small>
+
+      </div>
 
         <div class="ms-auto d-flex align-items-center gap-1">
           <a class="btn btn-outline-secondary btn-sm" href="{{ route('menus.show', $node->id) }}">
