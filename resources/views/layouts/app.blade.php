@@ -32,8 +32,14 @@
     <meta name="description" content="" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $settingApp->favicon) ?? asset('assets/img/favicon/favicon.ico') }}" />
+    @php
+        $favicon = $settingApp?->favicon
+            ? asset('storage/' . $settingApp->favicon)
+            : asset('assets/img/favicon/favicon.ico');
+    @endphp
 
+    <link rel="icon" href="{{ $favicon }}">
+    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
