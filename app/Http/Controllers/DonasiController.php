@@ -27,38 +27,76 @@ class DonasiController extends Controller
     {
         $allowedPageSizes = [5, 10, 20, 50];
         $ps = (int) $request->input('ps', 10);
+
         if (!in_array($ps, $allowedPageSizes, true)) {
             $ps = 10;
         }
 
         $q = trim((string) $request->input('q', ''));
+        $tanggalAwal = $request->input('tanggal_awal');
+        $tanggalAkhir = $request->input('tanggal_akhir');
 
-        $data = Donasi::with(['donatur', 'program'])
-            ->when($q, function ($query) use ($q) {
-                $query->where(function ($sub) use ($q) {
+        $data = Donasi::with([
+                    'donatur',
+                    'program',
+                ])
 
-                    $sub->whereHas('donatur', function ($d) use ($q) {
-                        $d->where('nama', 'like', "%{$q}%")
-                        ->orWhere('nomor_kode', 'like', "%{$q}%");
-                    })
+                // Filter pencarian
+                ->when($q, function ($query) use ($q) {
 
-                    ->orWhereHas('program', function ($p) use ($q) {
-                        $p->where('nama_program', 'like', "%{$q}%");
-                    })
+                    $query->where(function ($sub) use ($q) {
 
-                    ->orWhere('bulan', 'like', "%{$q}%")
-                    ->orWhere('tahun', 'like', "%{$q}%")
-                    ->orWhere('nominal', 'like', "%{$q}%");
-                });
-            })
-            ->orderByDesc('created_at')
-            ->paginate($ps)
-            ->appends($request->only('ps', 'q'));
+                        $sub->whereHas('donatur', function ($d) use ($q) {
+                                $d->where('nama', 'like', "%{$q}%")
+                                ->orWhere('nomor_kode', 'like', "%{$q}%");
+                            })
 
-        return view('pages.admin.donasi.index', [
-            'data' => $data,
-            'i' => ($data->currentPage() - 1) * $data->perPage(),
-        ]);
+                            ->orWhereHas('program', function ($p) use ($q) {
+                                $p->where('nama_program', 'like', "%{$q}%");
+                            })
+
+                            ->orWhere('bulan', 'like', "%{$q}%")
+                            ->orWhere('tahun', 'like', "%{$q}%")
+                            ->orWhere('nominal', 'like', "%{$q}%")
+                            ->orWhere('keterangan', 'like', "%{$q}%");
+                    });
+
+                })
+
+                // Filter tanggal awal
+                ->when($tanggalAwal, function ($query) use ($tanggalAwal) {
+                    $query->whereDate(
+                        'tanggal_donasi',
+                        '>=',
+                        $tanggalAwal
+                    );
+                })
+
+                // Filter tanggal akhir
+                ->when($tanggalAkhir, function ($query) use ($tanggalAkhir) {
+                    $query->whereDate(
+                        'tanggal_donasi',
+                        '<=',
+                        $tanggalAkhir
+                    );
+                })
+
+                ->orderByDesc('created_at')
+                ->orderByDesc('id')
+
+                ->paginate($ps)
+
+                ->appends([
+                    'q'             => $q,
+                    'tanggal_awal'  => $tanggalAwal,
+                    'tanggal_akhir' => $tanggalAkhir,
+                    'ps'            => $ps,
+                ]);
+
+            return view('pages.admin.donasi.index', [
+                'data' => $data,
+                'i' => ($data->currentPage() - 1) * $data->perPage(),
+            ]);
     }
 
     /**

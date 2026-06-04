@@ -142,8 +142,25 @@ CURRENT ROUTE: {{ request()->route()->getName() }}
     @else
         {{-- Leaf item --}}
         <a href="{{ $node->link() ?: 'javascript:void(0);' }}" class="menu-link">
-            <i class="menu-icon tf-icons {{ $node->icon }}"></i>
+            {{-- fa fa-circle --}}  
+            @if ($node->icon_image)
+                <img src="{{ asset('storage/' . $node->icon_image) }}"
+                    alt="icon"
+                    class="menu-icon"
+                    style="width: 22px; height: 22px; object-fit: contain; margin-right: 10px;">
+
+            {{-- @elseif 
+                 --}}
+
+            @else
+                @if ($node->icon != 'fa fa-circle') 
+                    <i class="menu-icon tf-icons {{ $node->icon }}"></i>
+                @endif   
+                {{-- <i class="menu-icon tf-icons fa-solid fa-circle-question"></i> --}}
+            @endif            
+
             <div>{{ $node->title }}</div>
+
         </a>
     @endif
 </li>
