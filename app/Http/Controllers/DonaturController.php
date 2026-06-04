@@ -184,4 +184,25 @@ class DonaturController extends Controller
             ->route('donatur.index')
             ->with('success', 'Data donatur berhasil dihapus.');
     }
+
+    public function cariByKode(Request $request)
+    {
+        $donatur = Donatur::with([
+            'desa',
+            'kecamatan'
+        ])
+        ->where('nomor_kode', $request->nomor_kode)
+        ->first();
+
+        if (!$donatur) {
+            return response()->json([
+                'success' => false
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $donatur
+        ]);
+    }
 }

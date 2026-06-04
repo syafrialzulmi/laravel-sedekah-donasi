@@ -37,6 +37,11 @@ class Donatur extends Model
         return $this->belongsTo(Kecamatan::class, 'kecamatan_id');
     }
 
+    public function donasi()
+    {
+        return $this->hasMany(Donasi::class);
+    }
+
     /**
      * Scope donatur aktif
      */

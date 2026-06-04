@@ -56,7 +56,7 @@
                   <thead class="table-light">
                       <tr>
                         <th style="width:72px;">No</th>
-                        <th>Kode Donatur</th>
+                        <th>Kode </th>
                         <th>Nama Donatur</th>
                         <th>No HP</th>
                         <th>Wilayah</th>
@@ -97,7 +97,25 @@
                         </td>
 
                         <td>
-                            {{ $item->alamatLengkap }}
+                            <div>{{ $item->alamat ?? '-' }}</div>
+
+                            <small class="text-muted">
+                                @if($item->dukuh)
+                                    Dukuh {{ $item->dukuh }}
+                                @endif
+
+                                @if($item->gang)
+                                    • Gang {{ $item->gang }}
+                                @endif
+
+                                @if($item->desa)
+                                    • {{ $item->desa->desa }}
+                                @endif
+
+                                @if($item->kecamatan)
+                                    • {{ $item->kecamatan->kecamatan }}
+                                @endif
+                            </small>
                         </td>
 
                         <td>

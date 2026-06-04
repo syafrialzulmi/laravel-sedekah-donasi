@@ -13,6 +13,7 @@ use App\Http\Controllers\Manage\SettingAppController;
 
 use App\Http\Controllers\ProgramSedekahController;
 use App\Http\Controllers\DonaturController;
+use App\Http\Controllers\DonasiController;
 
 use Mews\Captcha\Facades\Captcha;
 
@@ -67,7 +68,19 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::prefix('admin/master')->group(function () {
         Route::resource('/program-sedekah', ProgramSedekahController::class);
+        
+        Route::get('/donatur/cari', [DonaturController::class, 'cariByKode'])
+            ->name('donatur.cari');
         Route::resource('/donatur', DonaturController::class);
+    });
+
+    Route::prefix('admin/transaksi')->group(function () {
+
+        Route::post('/donasi/{id}/wa-terkirim', [DonasiController::class, 'waTerkirim'])
+            ->name('donasi.wa-terkirim');
+        Route::post('/donasi/{donasi}/kirim-wa',[DonasiController::class, 'kirimWa'])
+            ->name('donasi.kirim-wa');
+        Route::resource('/donasi', DonasiController::class);
     });
 
 });

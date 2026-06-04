@@ -142,6 +142,7 @@ CURRENT ROUTE: {{ request()->route()->getName() }}
     @else
         {{-- Leaf item --}}
         <a href="{{ $node->link() ?: 'javascript:void(0);' }}" class="menu-link">
+            <i class="menu-icon tf-icons {{ $node->icon }}"></i>
             <div>{{ $node->title }}</div>
         </a>
     @endif

@@ -20,6 +20,11 @@ class ProgramSedekah extends Model
         'target_dana' => 'decimal:2',
     ];
 
+    public function donasi()
+    {
+        return $this->hasMany(Donasi::class, 'program_id');
+    }
+
     /**
      * Scope program yang aktif
      */
