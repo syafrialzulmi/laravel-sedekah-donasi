@@ -67,6 +67,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::prefix('admin/master')->group(function () {
         Route::resource('/program-sedekah', ProgramSedekahController::class);
 
+        Route::get('/donatur/generate-kode', [DonaturController::class, 'generateKode'])
+            ->name('donatur.generate-kode');
         Route::get('/donatur/cari', [DonaturController::class, 'cariByKode'])
             ->name('donatur.cari');
         Route::resource('/donatur', DonaturController::class);

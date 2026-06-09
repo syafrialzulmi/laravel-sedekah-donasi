@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Donatur;
-use App\Models\ProgramSedekah;
 use App\Models\Desa;
+use App\Models\Donatur;
 use App\Models\Kecamatan;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 
 class DonaturController extends Controller
 {
-    function __construct()
+    public function __construct()
     {
-         $this->middleware('permission:donatur-list|donatur-create|donatur-edit|donatur-delete', ['only' => ['index','show']]);
-         $this->middleware('permission:donatur-create', ['only' => ['create','store']]);
-         $this->middleware('permission:donatur-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:donatur-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:donatur-list|donatur-create|donatur-edit|donatur-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:donatur-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:donatur-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:donatur-delete', ['only' => ['destroy']]);
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -27,21 +27,24 @@ class DonaturController extends Controller
     {
         $allowedPageSizes = [5, 10, 20, 50];
         $ps = (int) $request->input('ps', 10);
-        if (!in_array($ps, $allowedPageSizes, true)) {
+        if (! in_array($ps, $allowedPageSizes, true)) {
             $ps = 10;
         }
 
         $q = trim((string) $request->input('q', ''));
 
+        $gang = $request->gang;
+
         $data = Donatur::query()
-            ->when($q !== '', function ($query) use ($q) {
-                $query->where(function ($qq) use ($q) {
-                    $qq->where('nama', 'like', "%{$q}%");
-                });
+            ->when($q, function ($query) use ($q) {
+                $query->where('nama', 'like', "%{$q}%");
+            })
+            ->when($gang, function ($query) use ($gang) {
+                $query->where('gang', $gang);
             })
             ->latest()
             ->paginate($ps)
-            ->appends($request->only('ps','q'));
+            ->appends($request->only('q', 'gang', 'ps'));
 
         return view('pages.admin.donatur.index', [
             'data' => $data,
@@ -54,13 +57,33 @@ class DonaturController extends Controller
      */
     public function create()
     {
-        $kecamatans = Kecamatan::orderBy('kecamatan')->get();
-        $desas = collect();
+        // $kecamatans = Kecamatan::orderBy('kecamatan')->get();
+        // $desas = collect();
 
-        return view('pages.admin.donatur.create', compact(
-            'kecamatans',
-            'desas'
-        ));
+        $kecamatan = Kecamatan::findOrFail(4);
+        $desa = Desa::findOrFail(58);
+
+        $lastKode = Donatur::where('nomor_kode', 'like', 'UL-%')
+            ->orderByDesc('id')
+            ->value('nomor_kode');
+
+        if ($lastKode) {
+            $nomor = (int) substr($lastKode, 3);
+            $nomor++;
+        } else {
+            $nomor = 1;
+        }
+
+        $kodeDonatur = 'UL-'.str_pad($nomor, 4, '0', STR_PAD_LEFT);
+
+        return view(
+            'pages.admin.donatur.create',
+            compact(
+                'kecamatan',
+                'desa',
+                'kodeDonatur'
+            )
+        );
     }
 
     /**
@@ -69,15 +92,16 @@ class DonaturController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama'          => 'required|string|max:255',
-            'no_hp'         => 'nullable|string|max:20',
-            'email'         => 'nullable|email|max:255',
-            'alamat'        => 'nullable|string',
-            'dukuh'         => 'nullable|string|max:255',
-            'gang'          => 'nullable|integer|min:1|max:20',
-            'desa_id'       => 'nullable|exists:desa,id',
-            'kecamatan_id'  => 'nullable|exists:kecamatan,id',
-            'status'        => 'required|in:aktif,nonaktif',
+            'nomor_kode' => 'required|unique:donatur,nomor_kode',
+            'nama' => 'required|string|max:255',
+            'no_hp' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'alamat' => 'nullable|string',
+            'dukuh' => 'nullable|string|max:255',
+            'gang' => 'nullable|integer|min:1|max:20',
+            'desa_id' => 'nullable|exists:desa,id',
+            'kecamatan_id' => 'nullable|exists:kecamatan,id',
+            'status' => 'required|in:aktif,nonaktif',
         ]);
 
         DB::beginTransaction();
@@ -85,14 +109,14 @@ class DonaturController extends Controller
         try {
 
             // Generate kode donatur
-            $lastId = Donatur::max('id') + 1;
+            // $lastId = Donatur::max('id') + 1;
 
-            $validated['nomor_kode'] = 'DON-' . str_pad(
-                $lastId,
-                6,
-                '0',
-                STR_PAD_LEFT
-            );
+            // $validated['nomor_kode'] = 'DON-'.str_pad(
+            //     $lastId,
+            //     6,
+            //     '0',
+            //     STR_PAD_LEFT
+            // );
 
             Donatur::create($validated);
 
@@ -107,7 +131,7 @@ class DonaturController extends Controller
 
             return back()
                 ->withInput()
-                ->with('error', 'Gagal menyimpan data. ' . $e->getMessage());
+                ->with('error', 'Gagal menyimpan data. '.$e->getMessage());
         }
     }
 
@@ -124,10 +148,12 @@ class DonaturController extends Controller
      */
     public function edit(Donatur $donatur)
     {
-        $kecamatans = Kecamatan::orderBy('kecamatan')->get();
-        $desas = collect();
+        // $kecamatans = Kecamatan::orderBy('kecamatan')->get();
+        // $desas = collect();
+        $kecamatan = Kecamatan::findOrFail(4);
+        $desa = Desa::findOrFail(58);
 
-        return view('pages.admin.donatur.edit', compact('donatur','kecamatans','desas'));
+        return view('pages.admin.donatur.edit', compact('donatur', 'kecamatan', 'desa'));
     }
 
     /**
@@ -135,16 +161,22 @@ class DonaturController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $donatur = Donatur::findOrFail($id);
+
         $validated = $request->validate([
-            'nama'          => 'required|string|max:255',
-            'no_hp'         => 'nullable|string|max:20',
-            'email'         => 'nullable|email|max:255',
-            'alamat'        => 'nullable|string',
-            'dukuh'         => 'nullable|string|max:255',
-            'gang'          => 'nullable|integer|min:1|max:20',
-            'desa_id'       => 'nullable|exists:desa,id',
-            'kecamatan_id'  => 'nullable|exists:kecamatan,id',
-            'status'        => 'required|in:aktif,nonaktif',
+            'nomor_kode' => [
+                'required',
+                Rule::unique('donatur', 'nomor_kode')->ignore($donatur->id),
+            ],
+            'nama' => 'required|string|max:255',
+            'no_hp' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'alamat' => 'nullable|string',
+            'dukuh' => 'nullable|string|max:255',
+            'gang' => 'nullable|integer|min:1|max:20',
+            // 'desa_id' => 'nullable|exists:desa,id',
+            // 'kecamatan_id' => 'nullable|exists:kecamatan,id',
+            'status' => 'required|in:aktif,nonaktif',
         ]);
 
         DB::beginTransaction();
@@ -167,7 +199,7 @@ class DonaturController extends Controller
 
             return back()
                 ->withInput()
-                ->with('error', 'Gagal memperbarui data. ' . $e->getMessage());
+                ->with('error', 'Gagal memperbarui data. '.$e->getMessage());
         }
     }
 
@@ -178,6 +210,12 @@ class DonaturController extends Controller
     {
         $donatur = Donatur::findOrFail($id);
 
+        if ($donatur->donasi()->exists()) {
+            return redirect()
+                ->route('donatur.index')
+                ->with('error', 'Data donatur tidak dapat dihapus karena masih memiliki data donasi.');
+        }
+
         $donatur->delete();
 
         return redirect()
@@ -185,24 +223,39 @@ class DonaturController extends Controller
             ->with('success', 'Data donatur berhasil dihapus.');
     }
 
+    public function generateKode()
+    {
+        $lastKode = Donatur::where('nomor_kode', 'like', 'UL-%')
+            ->orderByDesc('id')
+            ->value('nomor_kode');
+
+        $nomor = $lastKode
+            ? ((int) substr($lastKode, 3)) + 1
+            : 1;
+
+        return response()->json([
+            'kode' => 'UL-'.str_pad($nomor, 4, '0', STR_PAD_LEFT),
+        ]);
+    }
+
     public function cariByKode(Request $request)
     {
         $donatur = Donatur::with([
             'desa',
-            'kecamatan'
+            'kecamatan',
         ])
-        ->where('nomor_kode', $request->nomor_kode)
-        ->first();
+            ->where('nomor_kode', $request->nomor_kode)
+            ->first();
 
-        if (!$donatur) {
+        if (! $donatur) {
             return response()->json([
-                'success' => false
+                'success' => false,
             ]);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $donatur
+            'data' => $donatur,
         ]);
     }
 }

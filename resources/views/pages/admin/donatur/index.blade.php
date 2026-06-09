@@ -24,30 +24,68 @@
         <div class="card-body">
 
             {{-- Toolbar: server-side filter --}}
-            <form id="filterForm" method="GET" class="d-flex flex-wrap align-items-center gap-2 mb-3">
-            <div class="input-group" style="max-width: 420px;">
-                <span class="input-group-text"><i class="fa fa-search"></i></span>
-                <input
-                type="text"
-                name="q"
-                value="{{ request('q') }}"
-                class="form-control"
-                placeholder="Cari produk (nama program)...">
-                @if(request()->filled('q'))
-                <a href="{{ route('donatur.index', ['ps' => request('ps', 10)]) }}" class="btn btn-light">Reset</a>
-                @endif
-            </div>
+            <form id="filterForm" method="GET" class="row g-2 mb-3">
 
-            <div class="ms-auto d-flex align-items-center gap-2">
-                <span class="text-muted small d-none d-sm-inline">Tampilkan</span>
-                <select name="ps" id="pageSize" class="form-select form-select-sm" style="width:auto;">
-                @php $ps = (int) request('ps', 10); @endphp
-                <option value="5"  {{ $ps===5  ? 'selected' : '' }}>5</option>
-                <option value="10" {{ $ps===10 ? 'selected' : '' }}>10</option>
-                <option value="20" {{ $ps===20 ? 'selected' : '' }}>20</option>
-                <option value="50" {{ $ps===50 ? 'selected' : '' }}>50</option>
-                </select>
-            </div>
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fa fa-search"></i>
+                        </span>
+
+                        <input
+                            type="text"
+                            name="q"
+                            value="{{ request('q') }}"
+                            class="form-control"
+                            placeholder="Cari nama donatur...">
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <select
+                        name="gang"
+                        class="form-select"
+                        onchange="document.getElementById('filterForm').submit()">
+
+                        <option value="">Semua Gang</option>
+
+                        @for($i=1;$i<=40;$i++)
+                            <option value="{{ $i }}"
+                                {{ request('gang') == $i ? 'selected' : '' }}>
+                                Gang {{ $i }}
+                            </option>
+                        @endfor
+
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select
+                        name="ps"
+                        class="form-select"
+                        onchange="document.getElementById('filterForm').submit()">
+
+                        <option value="5" {{ request('ps',10)==5 ? 'selected':'' }}>5</option>
+                        <option value="10" {{ request('ps',10)==10 ? 'selected':'' }}>10</option>
+                        <option value="20" {{ request('ps',10)==20 ? 'selected':'' }}>20</option>
+                        <option value="50" {{ request('ps',10)==50 ? 'selected':'' }}>50</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 text-end">
+
+                    <button class="btn btn-primary">
+                        <i class="fa fa-search"></i>
+                        Cari
+                    </button>
+
+                    <a href="{{ route('donatur.index') }}"
+                        class="btn btn-secondary">
+                        Reset
+                    </a>
+
+                </div>
+
             </form>
 
             @if ($data->count())
@@ -79,12 +117,12 @@
                                 {{ $item->nama }}
                             </div>
 
-                            @if($item->email)
+                            {{-- @if($item->email)
                                 <small class="text-muted">
                                     <i class="fa-solid fa-envelope me-1"></i>
                                     {{ $item->email }}
                                 </small>
-                            @endif
+                            @endif --}}
                         </td>
 
                         <td>
@@ -100,12 +138,12 @@
                             <div>{{ $item->alamat ?? '-' }}</div>
 
                             <small class="text-muted">
-                                @if($item->dukuh)
+                                {{-- @if($item->dukuh)
                                     Dukuh {{ $item->dukuh }}
-                                @endif
+                                @endif --}}
 
                                 @if($item->gang)
-                                    • Gang {{ $item->gang }}
+                                    Gang {{ $item->gang }}
                                 @endif
 
                                 @if($item->desa)

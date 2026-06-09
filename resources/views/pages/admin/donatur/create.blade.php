@@ -141,6 +141,16 @@ $(document).ready(function() {
         loadDesa($(this).val());
     });
 
+    $('#btnGenerateKode').click(function () {
+
+        $.get("{{ route('donatur.generate-kode') }}", function(res){
+
+            $('input[name="nomor_kode"]').val(res.kode);
+
+        });
+
+    });
+
 });
 </script>
 
