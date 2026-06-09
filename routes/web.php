@@ -5,6 +5,7 @@ use App\Http\Controllers\DasborController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\DonaturController;
 use App\Http\Controllers\LaporanDonasiController;
+use App\Http\Controllers\Manage\BackupController;
 use App\Http\Controllers\Manage\MenuController;
 use App\Http\Controllers\Manage\RoleController;
 use App\Http\Controllers\Manage\SettingAppController;
@@ -62,6 +63,8 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::resource('/wa-template', WaTemplateController::class);
 
+        Route::post('/backup/database', [BackupController::class, 'database'])
+            ->name('backup.database');
     });
 
     Route::prefix('admin/master')->group(function () {
