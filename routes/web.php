@@ -1,22 +1,17 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\AuthController;
-
 use App\Http\Controllers\DasborController;
-
-use App\Http\Controllers\Manage\RoleController;
-use App\Http\Controllers\Manage\UserController;
-use App\Http\Controllers\Manage\MenuController;
-use App\Http\Controllers\Manage\SettingAppController;
-
-use App\Http\Controllers\ProgramSedekahController;
-use App\Http\Controllers\DonaturController;
 use App\Http\Controllers\DonasiController;
+use App\Http\Controllers\DonaturController;
 use App\Http\Controllers\LaporanDonasiController;
-
-use Mews\Captcha\Facades\Captcha;
+use App\Http\Controllers\Manage\MenuController;
+use App\Http\Controllers\Manage\RoleController;
+use App\Http\Controllers\Manage\SettingAppController;
+use App\Http\Controllers\Manage\UserController;
+use App\Http\Controllers\Manage\WaTemplateController;
+use App\Http\Controllers\ProgramSedekahController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -45,7 +40,7 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::group(['middleware' => ['auth']], function() {
+Route::group(['middleware' => ['auth']], function () {
     Route::get('/admin', [DasborController::class, 'index'])->name('dasbor');
 
     Route::prefix('admin/manage')->group(function () {
@@ -54,7 +49,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/profilku', [UserController::class, 'showProfile'])->name('profilku');
         Route::post('/profilku/update', [UserController::class, 'updateProfile'])->name('profilku.update');
         Route::resource('/users', UserController::class);
-        
+
         Route::resource('/menus', MenuController::class);
 
         Route::get('/setting-app/desa-by-kecamatan/{kecamatan_id}', [SettingAppController::class, 'getDesaByKecamatan'])
@@ -65,11 +60,13 @@ Route::group(['middleware' => ['auth']], function() {
         Route::put('/setting-app/{settingApp}', [SettingAppController::class, 'update'])->name('setting-app.update');
         Route::delete('/setting-app', [SettingAppController::class, 'clear'])->name('setting-app.clear');
 
+        Route::resource('/wa-template', WaTemplateController::class);
+
     });
 
     Route::prefix('admin/master')->group(function () {
         Route::resource('/program-sedekah', ProgramSedekahController::class);
-        
+
         Route::get('/donatur/cari', [DonaturController::class, 'cariByKode'])
             ->name('donatur.cari');
         Route::resource('/donatur', DonaturController::class);
@@ -79,7 +76,7 @@ Route::group(['middleware' => ['auth']], function() {
 
         Route::post('/donasi/{id}/wa-terkirim', [DonasiController::class, 'waTerkirim'])
             ->name('donasi.wa-terkirim');
-        Route::post('/donasi/{donasi}/kirim-wa',[DonasiController::class, 'kirimWa'])
+        Route::post('/donasi/{donasi}/kirim-wa', [DonasiController::class, 'kirimWa'])
             ->name('donasi.kirim-wa');
         Route::resource('/donasi', DonasiController::class);
 

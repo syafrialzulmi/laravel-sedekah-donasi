@@ -119,7 +119,7 @@
                         class="form-select form-select-sm"
                         required>
 
-                    @for($tahun = date('Y') + 1; $tahun >= date('Y') - 5; $tahun--)
+                    @for($tahun = date('Y') + 5; $tahun >= date('Y') - 1; $tahun--)
                         <option value="{{ $tahun }}"
                             {{ old('tahun', $item?->tahun ?? date('Y')) == $tahun ? 'selected' : '' }}>
                             {{ $tahun }}
@@ -156,7 +156,7 @@
                     name="donatur_id"
                     id="donatur_id"
                     value="{{ old('donatur_id', $item?->donatur_id) }}">
-            </div>                    
+            </div>
         </div>
 
         {{-- Detail Donatur --}}
