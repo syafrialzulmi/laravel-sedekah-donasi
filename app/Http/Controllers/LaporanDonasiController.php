@@ -2,30 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProgramSedekah;
-use App\Models\Donatur;
 use App\Models\Donasi;
+use App\Models\Donatur;
+use App\Models\ProgramSedekah;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Validation\Rule;
-use Carbon\Carbon;
 
 class LaporanDonasiController extends Controller
 {
-    function __construct()
+    public function __construct()
     {
-         $this->middleware('permission:laporan-donasi-list|laporan-donasi-create|laporan-donasi-edit|laporan-donasi-delete', ['only' => ['index','show']]);
-         $this->middleware('permission:laporan-donasi-create', ['only' => ['create','store']]);
-         $this->middleware('permission:laporan-donasi-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:laporan-donasi-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:laporan-donasi-list|laporan-donasi-create|laporan-donasi-edit|laporan-donasi-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:laporan-donasi-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:laporan-donasi-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:laporan-donasi-delete', ['only' => ['destroy']]);
     }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request): View
     {
-        $programs = ProgramSedekah::orderBy('nama_program')->get();
+        $programs = ProgramSedekah::orderBy('nama_program')
+            ->get();
+        $years = Donasi::select('tahun')
+            ->distinct()
+            ->orderByDesc('tahun')
+            ->pluck('tahun');
+
         // default program_id = 1
         $programId = $request->input('program_id', 1);
         $tahun = $request->tahun ?? date('Y');
@@ -51,10 +55,11 @@ class LaporanDonasiController extends Controller
 
         return view('pages.admin.laporan_donasi.index', [
             'tahun' => $tahun,
-            'programId'   => $programId,
+            'programId' => $programId,
             'donaturList' => $donaturList,
             'pivot' => $pivot,
             'programs' => $programs,
+            'years' => $years,
         ]);
     }
 

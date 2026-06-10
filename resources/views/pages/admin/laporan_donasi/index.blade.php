@@ -52,12 +52,14 @@
                         <label class="form-label">Tahun</label>
 
                         <select name="tahun" class="form-select">
-                            @for($i = date('Y') + 1; $i >= date('Y') - 5; $i--)
-                                <option value="{{ $i }}"
-                                    {{ $tahun == $i ? 'selected' : '' }}>
-                                    {{ $i }}
+                            <option value="">Semua Tahun</option>
+
+                            @foreach($years as $item)
+                                <option value="{{ $item }}"
+                                    {{ $tahun == $item ? 'selected' : '' }}>
+                                    {{ $tahun }}
                                 </option>
-                            @endfor
+                            @endforeach
                         </select>
                     </div>
 
