@@ -35,10 +35,10 @@ class PermissionSeeder extends Seeder
             ['menu_id' => 5, 'name' => 'setting-app-delete', 'guard_name' => 'web'],
 
             // Produk
-            ['menu_id' => 7, 'name' => 'product-list', 'guard_name' => 'web'],
-            ['menu_id' => 7, 'name' => 'product-create', 'guard_name' => 'web'],
-            ['menu_id' => 7, 'name' => 'product-edit', 'guard_name' => 'web'],
-            ['menu_id' => 7, 'name' => 'product-delete', 'guard_name' => 'web'],
+            // ['menu_id' => 7, 'name' => 'product-list', 'guard_name' => 'web'],
+            // ['menu_id' => 7, 'name' => 'product-create', 'guard_name' => 'web'],
+            // ['menu_id' => 7, 'name' => 'product-edit', 'guard_name' => 'web'],
+            // ['menu_id' => 7, 'name' => 'product-delete', 'guard_name' => 'web'],
         ];
 
         DB::table('permissions')->insert($permissions);
