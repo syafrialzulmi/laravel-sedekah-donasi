@@ -119,23 +119,25 @@ $(function(){
 
     $('#btnKirimUlangWA').on('click', function(){
 
-        let perubahan = data.changes
-            .map(x => '• ' + x)
-            .join('\n');
+    let pesan = data.pesan;
 
-        let pesan =
-`Assalamu'alaikum ${data.nama},
+//         let perubahan = data.changes
+//             .map(x => '• ' + x)
+//             .join('\n');
 
-Data donasi Anda telah diperbarui.
+//         let pesan =
+// `Assalamu'alaikum ${data.nama},
 
-Program : ${data.program}
-Nominal : Rp ${data.nominal}
-Periode : ${data.periode}
+// Data donasi Anda telah diperbarui.
 
-Perubahan:
-${perubahan}
+// Program : ${data.program}
+// Nominal : Rp ${data.nominal}
+// Periode : ${data.periode}
 
-Terima kasih atas partisipasi Anda dalam program sedekah kami.`;
+// Perubahan:
+// ${perubahan}
+
+// Terima kasih atas partisipasi Anda dalam program sedekah kami.`;
 
         let hp = data.hp.replace(/^0/, '62');
 

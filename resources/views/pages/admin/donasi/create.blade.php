@@ -268,15 +268,16 @@ $(function(){
 
     let data = @json(session('wa_data'));
 
-    let pesan =
-`Assalamu'alaikum ${data.nama},
+    let pesan = data.pesan;
+//     let pesan =
+// `Assalamu'alaikum ${data.nama},
 
-Terima kasih telah berdonasi pada program *${data.program}*.
+// Terima kasih telah berdonasi pada program *${data.program}*.
 
-Nominal Donasi : Rp ${data.nominal}
-Periode : ${data.periode}
+// Nominal Donasi : Rp ${data.nominal}
+// Periode : ${data.periode}
 
-Semoga Allah membalas dengan pahala yang berlipat ganda. Aamiin.`;
+// Semoga Allah membalas dengan pahala yang berlipat ganda. Aamiin.`;
 
     let hp = data.hp.replace(/^0/, '62');
 

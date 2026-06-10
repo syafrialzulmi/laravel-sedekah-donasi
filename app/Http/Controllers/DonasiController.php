@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Donasi;
 use App\Models\ProgramSedekah;
+use App\Services\WaTemplateService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -176,13 +177,21 @@ class DonasiController extends Controller
             'program',
         ]);
 
+        $pesan = WaTemplateService::render('DONASI_BARU', [
+            'nama' => $donasi->donatur->nama,
+            'program' => $donasi->program->nama_program,
+            'nominal' => number_format($donasi->nominal, 0, ',', '.'),
+            'periode' => $donasi->bulan.' '.$donasi->tahun,
+        ]);
+
         return redirect()
             ->route('donasi.create')
             ->with('show_wa_modal', true)
             ->with('wa_data', [
                 'id' => $donasi->id,
-                'nama' => $donasi->donatur->nama,
                 'hp' => $donasi->donatur->no_hp,
+                'pesan' => $pesan,
+                'nama' => $donasi->donatur->nama,
                 'program' => $donasi->program->nama_program,
                 'nominal' => number_format($donasi->nominal, 0, ',', '.'),
                 'periode' => $donasi->periode,
@@ -312,6 +321,18 @@ class DonasiController extends Controller
             $changes[] = 'Keterangan donasi diubah';
         }
 
+        $perubahan = count($changes)
+            ? implode("\n", $changes)
+            : '- Tidak ada perubahan.';
+
+        $pesan = WaTemplateService::render('DONASI_UPDATE', [
+            'nama' => $donasi->donatur->nama,
+            'program' => $donasi->program->nama_program,
+            'nominal' => number_format($donasi->nominal, 0, ',', '.'),
+            'periode' => $donasi->bulan.' '.$donasi->tahun,
+            'perubahan' => $perubahan,
+        ]);
+
         return redirect()
             ->route('donasi.edit', $donasi->id)
             ->with('success', 'Data donasi berhasil diperbarui')
@@ -320,10 +341,11 @@ class DonasiController extends Controller
                 'id' => $donasi->id,
                 'nama' => $donasi->donatur->nama,
                 'hp' => $donasi->donatur->no_hp,
-                'program' => $donasi->program->nama_program,
-                'nominal' => number_format($donasi->nominal, 0, ',', '.'),
-                'periode' => $donasi->bulan.'/'.$donasi->tahun,
+                // 'program' => $donasi->program->nama_program,
+                // 'nominal' => number_format($donasi->nominal, 0, ',', '.'),
+                // 'periode' => $donasi->bulan.'/'.$donasi->tahun,
                 'changes' => $changes,
+                'pesan' => $pesan,
             ]);
     }
 
