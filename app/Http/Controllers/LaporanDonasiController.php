@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Donasi;
 use App\Models\Donatur;
 use App\Models\ProgramSedekah;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -33,8 +34,14 @@ class LaporanDonasiController extends Controller
         // default program_id = 1
         $programId = $request->input('program_id', 1);
         $tahun = $request->tahun ?? date('Y');
+        $gang = $request->input('gang');
 
-        $donaturList = Donatur::orderBy('nomor_kode')
+        $donaturList = Donatur::query()
+            ->when($gang, function ($query) use ($gang) {
+                $query->where('gang', $gang);
+            })
+            ->orderBy('gang')
+            ->orderBy('nomor_kode')
             ->get();
 
         $donasi = Donasi::selectRaw('
@@ -56,6 +63,7 @@ class LaporanDonasiController extends Controller
         return view('pages.admin.laporan_donasi.index', [
             'tahun' => $tahun,
             'programId' => $programId,
+            'gang' => $gang,
             'donaturList' => $donaturList,
             'pivot' => $pivot,
             'programs' => $programs,
@@ -109,5 +117,53 @@ class LaporanDonasiController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function print(Request $request)
+    {
+        $programs = ProgramSedekah::orderBy('nama_program')->get();
+
+        $programId = $request->input('program_id', 1);
+        $tahun = $request->input('tahun', date('Y'));
+        $gang = $request->input('gang');
+
+        $program = ProgramSedekah::find($programId);
+
+        $donaturList = Donatur::query()
+            ->when($gang, function ($query) use ($gang) {
+                $query->where('gang', $gang);
+            })
+            ->orderBy('gang')
+            ->orderBy('nomor_kode')
+            ->get();
+
+        $donasi = Donasi::selectRaw('
+                donatur_id,
+                bulan,
+                SUM(nominal) as total_nominal
+            ')
+            ->where('tahun', $tahun)
+            ->where('program_id', $programId)
+            ->groupBy('donatur_id', 'bulan')
+            ->get();
+
+        $pivot = [];
+
+        foreach ($donasi as $item) {
+            $pivot[$item->donatur_id][$item->bulan] = $item->total_nominal;
+        }
+
+        $filename = 'laporan_donasi_'.now()->format('Ymd_His').'.pdf';
+
+        $pdf = Pdf::loadView('pages.admin.laporan_donasi.pdf', [
+            'tahun' => $tahun,
+            'gang' => $gang,
+            'program' => $program,
+            'programId' => $programId,
+            'donaturList' => $donaturList,
+            'pivot' => $pivot,
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->stream($filename);
     }
 }

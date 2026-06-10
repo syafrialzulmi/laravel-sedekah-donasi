@@ -70,6 +70,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::prefix('admin/master')->group(function () {
         Route::resource('/program-sedekah', ProgramSedekahController::class);
 
+        Route::get('/donatur/print', [DonaturController::class, 'print'])
+            ->name('donatur.print');
         Route::get('/donatur/generate-kode', [DonaturController::class, 'generateKode'])
             ->name('donatur.generate-kode');
         Route::get('/donatur/cari', [DonaturController::class, 'cariByKode'])
@@ -79,12 +81,16 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::prefix('admin/transaksi')->group(function () {
 
+        Route::get('/donasi/print', [DonasiController::class, 'print'])
+            ->name('donasi.print');
         Route::post('/donasi/{id}/wa-terkirim', [DonasiController::class, 'waTerkirim'])
             ->name('donasi.wa-terkirim');
         Route::post('/donasi/{donasi}/kirim-wa', [DonasiController::class, 'kirimWa'])
             ->name('donasi.kirim-wa');
         Route::resource('/donasi', DonasiController::class);
 
+        Route::get('/laporan-donasi/print', [LaporanDonasiController::class, 'print'])
+            ->name('laporan-donasi.print');
         Route::resource('/laporan-donasi', LaporanDonasiController::class);
     });
 

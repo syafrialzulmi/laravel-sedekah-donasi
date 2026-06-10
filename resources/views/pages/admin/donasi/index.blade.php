@@ -29,13 +29,48 @@
                     class="row g-2 align-items-end mb-3">
 
                     {{-- Pencarian --}}
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label">Pencarian</label>
                         <input type="text"
                             name="q"
                             value="{{ request('q') }}"
                             class="form-control"
                             placeholder="Donatur, kode, program, nominal, tahun...">
+                    </div>
+
+                    <div class="col-md-2">
+                        <select
+                            name="gang"
+                            class="form-select"
+                            onchange="document.getElementById('filterForm').submit()">
+
+                            <option value="">Semua Gang</option>
+
+                            @for($i=1;$i<=40;$i++)
+                                <option value="{{ $i }}"
+                                    {{ request('gang') == $i ? 'selected' : '' }}>
+                                    Gang {{ $i }}
+                                </option>
+                            @endfor
+
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Program Sekedah</label>
+
+                        <select name="program_id"
+                                id="program_id"
+                                class="form-select">
+                            <option value="">Semua Program</option>
+                            @foreach($programs as $program)
+                                <option value="{{ $program->id }}"
+                                    {{ (string)$programId === (string)$program->id ? 'selected' : '' }}>
+                                    {{ $program->nama_program }}
+                                </option>
+                            @endforeach
+
+                        </select>
                     </div>
 
                     {{-- Tanggal Awal --}}
@@ -71,24 +106,29 @@
                     </div>
 
                     {{-- Tombol --}}
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary flex-fill">
+                            <button type="submit" class="btn btn-primary">
                                 <i class="fa fa-search me-1"></i>
                                 Cari
                             </button>
 
                             <a href="{{ route('donasi.index') }}"
                             class="btn btn-secondary">
-                                <i class="fa fa-reload me-1"></i>
+                                <i class="fa fa-refresh me-1"></i>
                                 Reset
+                            </a>
+
+                            <a href="{{ route('donasi.print', request()->query()) }}"
+                                    target="_blank"
+                                    class="btn btn-danger">
+                                <i class="fa fa-file-pdf"></i>
+                                Cetak
                             </a>
                         </div>
                     </div>
-
                 </form>
 
-                
 
                 @if ($data->count())
                 <div class="table-responsive mb-3 tableFixHead">
@@ -113,8 +153,12 @@
                                 </div>
 
                                 <small class="text-muted">
-                                    {{ $item->donatur->nomor_kode ?? '-' }}
-                                </small>
+                                {{ $item->donatur->nomor_kode ?? '-' }}
+
+                                @if(!empty($item->donatur?->gang))
+                                    • Gang {{ $item->donatur->gang }}
+                                @endif
+                            </small>
                             </td>
 
                             <td>

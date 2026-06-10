@@ -26,7 +26,7 @@
             {{-- Toolbar: server-side filter --}}
             <form id="filterForm" method="GET" class="row g-2 mb-3">
 
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <div class="input-group">
                         <span class="input-group-text">
                             <i class="fa fa-search"></i>
@@ -72,7 +72,7 @@
                     </select>
                 </div>
 
-                <div class="col-md-3 text-end">
+                <div class="col-md-4 text-end">
 
                     <button class="btn btn-primary">
                         <i class="fa fa-search"></i>
@@ -81,7 +81,15 @@
 
                     <a href="{{ route('donatur.index') }}"
                         class="btn btn-secondary">
+                        <i class="fa fa-refresh me-1"></i>
                         Reset
+                    </a>
+
+                    <a href="{{ route('donatur.print', request()->query()) }}"
+                            target="_blank"
+                            class="btn btn-danger">
+                        <i class="fa fa-file-pdf"></i>
+                        Cetak
                     </a>
 
                 </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Desa;
 use App\Models\Donatur;
 use App\Models\Kecamatan;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -257,5 +258,31 @@ class DonaturController extends Controller
             'success' => true,
             'data' => $donatur,
         ]);
+    }
+
+    public function print(Request $request)
+    {
+        $donatur = Donatur::query();
+
+        if ($request->filled('q')) {
+            $donatur->where('nama', 'like', '%'.$request->q.'%');
+        }
+
+        if ($request->filled('gang')) {
+            $donatur->where('gang', $request->gang);
+        }
+
+        $data = $donatur
+            ->orderBy('nomor_kode')
+            ->get();
+
+        $filename = 'donatur_'.now()->format('Ymd_His').'.pdf';
+
+        $pdf = Pdf::loadView('pages.admin.donatur.pdf', [
+            'donatur' => $data,
+        ])
+            ->setPaper('a4', 'landscape'); // atau 'portrait'   //->setPaper('a4', 'portrait');
+
+        return $pdf->stream($filename);
     }
 }

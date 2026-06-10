@@ -14,7 +14,7 @@
                 <h5 class="mb-0">Laporan Donasi</h5>
                 <small class="text-muted">Daftar Laporan Donasi.</small>
             </div>
-            <form action="{{ route('backup.database') }}"
+            {{-- <form action="{{ route('backup.database') }}"
                 method="POST"
                 onsubmit="return confirm('Apakah Anda yakin ingin melakukan backup database?')">
 
@@ -26,14 +26,15 @@
                     Backup Database
                 </button>
 
-            </form>
+            </form> --}}
         </div>
 
         <div class="card">
             <div class="card-body">
-                <form method="GET" class="row g-2 mb-3">
+                <form id="filterForm" method="GET" class="row g-3 mb-3">
+
                     <div class="col-md-3">
-                        <label class="form-label">Program Sekedah</label>
+                        <label class="form-label">Program Sedekah</label>
 
                         <select name="program_id"
                                 id="program_id"
@@ -48,7 +49,8 @@
 
                         </select>
                     </div>
-                    <div class="col-md-3">
+
+                    <div class="col-md-2">
                         <label class="form-label">Tahun</label>
 
                         <select name="tahun" class="form-select">
@@ -57,18 +59,47 @@
                             @foreach($years as $item)
                                 <option value="{{ $item }}"
                                     {{ $tahun == $item ? 'selected' : '' }}>
-                                    {{ $tahun }}
+                                    {{ $item }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
 
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button class="btn btn-primary">
+                    <div class="col-md-2">
+                        <label class="form-label">Gang</label>
+                        <select name="gang" class="form-select">
+                            <option value="">Semua Gang</option>
+                            @for($i = 1; $i <= 40; $i++)
+                                <option value="{{ $i }}"
+                                    {{ request('gang') == $i ? 'selected' : '' }}>
+                                    Gang {{ $i }}
+                                </option>
+                            @endfor
+                        </select>
+                    </div>
+
+                    <div class="col-md-5 d-flex align-items-end justify-content-end gap-2">
+
+                        <button type="submit" class="btn btn-primary">
                             <i class="fa fa-search me-1"></i>
                             Tampilkan
                         </button>
+
+                        <a href="{{ route('laporan-donasi.index') }}"
+                        class="btn btn-secondary">
+                            <i class="fa fa-rotate-left me-1"></i>
+                            Reset
+                        </a>
+
+                        <a href="{{ route('laporan-donasi.print', request()->query()) }}"
+                        target="_blank"
+                        class="btn btn-danger">
+                            <i class="fa fa-file-pdf me-1"></i>
+                            Cetak
+                        </a>
+
                     </div>
+
                 </form>
 
                 <div class="table-responsive">
@@ -113,7 +144,17 @@
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $donatur->nomor_kode }}</td>
-                                    <td>{{ $donatur->nama }}</td>
+                                    <td>
+                                        <div class="fw-semibold">
+                                            {{ $donatur->nama }}
+                                        </div>
+
+                                        <small class="text-muted">
+                                            Gang {{ $donatur->gang }}
+                                            &nbsp;&nbsp;|&nbsp;&nbsp;
+                                            {{ $donatur->no_hp }}
+                                        </small>
+                                    </td>
                                     @for($bulan = 1; $bulan <= 12; $bulan++)
                                         @php
                                             $nominal = $pivot[$donatur->id][$bulan] ?? 0;
