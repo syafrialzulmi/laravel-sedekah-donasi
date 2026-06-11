@@ -40,7 +40,7 @@
     @endphp
 
     <link rel="icon" href="{{ $favicon }}">
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -191,7 +191,7 @@
         }
     });
     </script>
-    
+
     {{-- <script src={{ asset('assets/vendor/libs/jquery/jquery.js') }}></script> --}}
     <script src={{ asset('assets/vendor/libs/popper/popper.js') }}></script>
     <script src={{ asset('assets/vendor/js/bootstrap.js') }}></script>

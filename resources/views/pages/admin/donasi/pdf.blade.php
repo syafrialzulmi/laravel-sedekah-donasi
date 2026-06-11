@@ -68,6 +68,23 @@
         <strong>Gang :</strong> {{ $gang }}<br>
     @endif
 
+    @php
+    $bulan = [
+        1=>'Januari',
+        2=>'Februari',
+        3=>'Maret',
+        4=>'April',
+        5=>'Mei',
+        6=>'Juni',
+        7=>'Juli',
+        8=>'Agustus',
+        9=>'September',
+        10=>'Oktober',
+        11=>'November',
+        12=>'Desember'
+    ];
+    @endphp
+
 </div>
 
 <table>
@@ -81,8 +98,7 @@
         <th>Donatur</th>
         <th width="70">Gang</th>
         <th>Program</th>
-        <th width="80">Bulan</th>
-        <th width="60">Tahun</th>
+        <th width="100">Periode</th>
         <th width="120">Nominal</th>
     </tr>
 
@@ -123,11 +139,7 @@
             </td>
 
             <td class="text-center">
-                {{ $item->bulan }}
-            </td>
-
-            <td class="text-center">
-                {{ $item->tahun }}
+                {{ $bulan[$item->bulan] ?? '-' }} {{ $item->tahun }}
             </td>
 
             <td class="text-right">
@@ -139,7 +151,7 @@
     @empty
 
         <tr>
-            <td colspan="9" class="text-center">
+            <td colspan="8" class="text-center">
                 Tidak ada data.
             </td>
         </tr>
@@ -152,7 +164,7 @@
 
     <tr>
 
-        <th colspan="8" class="text-right">
+        <th colspan="7" class="text-right">
             TOTAL
         </th>
 
