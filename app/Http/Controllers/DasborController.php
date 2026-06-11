@@ -22,13 +22,21 @@ class DasborController extends Controller
             $q->where('nama_program', 'mandiri');
         })->sum('nominal');
 
+        $driver = DB::connection()->getDriverName();
         // Grafik 12 bulan
-        $chart = Donasi::selectRaw('
-                MONTH(tanggal_donasi) as bulan,
-                SUM(nominal) as total
-            ')
-            ->whereYear('tanggal_donasi', date('Y'))
-            ->groupBy(DB::raw('MONTH(tanggal_donasi)'))
+        $monthExpression = match ($driver) {
+            'pgsql' => 'EXTRACT(MONTH FROM tanggal_donasi)',
+            'mysql' => 'MONTH(tanggal_donasi)',
+            default => 'MONTH(tanggal_donasi)',
+        };
+
+        $chart = Donasi::selectRaw("
+                {$monthExpression} AS bulan,
+                SUM(nominal) AS total
+            ")
+            ->whereYear('tanggal_donasi', now()->year)
+            ->groupByRaw($monthExpression)
+            ->orderByRaw($monthExpression)
             ->pluck('total', 'bulan');
 
         $labels = [];
