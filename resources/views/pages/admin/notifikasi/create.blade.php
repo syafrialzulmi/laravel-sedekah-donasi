@@ -144,19 +144,44 @@ const templates = {
 
         variables: [
             'nama',
+            'nomor_kode',
             'program',
             'nominal',
             'periode'
         ],
 
-        isi: `Assalamu'alaikum {nama},
+        isi: `*Bismillahirrahmanirrahim*
 
-Terima kasih telah berdonasi pada program *{program}*.
+    *Ajarokallahu fimaa a'thoita wa baroka fiima abqoita wa ja'alahu laka thohuro.*
 
-Nominal Donasi : Rp {nominal}
-Periode : {periode}
+    _Semoga Allah memberikan ganjaran (pahala) terhadap engkau dan semoga Allah memberikan keberkahan terhadap harta yang engkau sisakan, dan menjadikannya sebagai pensuci bagi engkau._
 
-Semoga Allah membalas dengan pahala yang berlipat ganda. Aamiin.`
+    UPZISNU CARE-LAZISNU DESA UNDAAN LOR mengucapkan *Terima kasih* kepada:
+
+    * *{nama}*
+    * *Pemegang Kartu {nomor_kode}*
+
+    telah mempercayakan donasi kepada kami pada program *{program}*.
+
+    *Periode* : *{periode}*
+    *Nominal* : *Rp {nominal}*
+
+    Semoga Allah menerima amal ibadah Bapak/Ibu, melimpahkan keberkahan rezeki, serta menjadikan donasi ini sebagai amal jariyah yang pahalanya terus mengalir. Aamiin.
+
+    *#KOIN INUK untuk Kemandirian Nahdlatul Ulama*
+
+    Informasi lengkap, follow, share & like akun resmi
+    UPZISNU DESA UNDAAN LOR
+
+    Instagram : @upzisnuundaanlor
+    Facebook : Upzisnu Undaan Lor
+
+    _Call Center_ : *0858-6550-5597*
+
+    *Info Rekening*
+    Bank BRI
+    5930 01 042074 53 8
+    a.n. UPZIS NU Undaan Lor`
 
     },
 
@@ -170,24 +195,51 @@ Semoga Allah membalas dengan pahala yang berlipat ganda. Aamiin.`
 
         variables: [
             'nama',
+            'nomor_kode',
             'program',
             'nominal',
             'periode',
             'perubahan'
         ],
 
-        isi: `Assalamu'alaikum {nama},
+        isi: `*Bismillahirrahmanirrahim*
 
-Data donasi Anda telah diperbarui.
+    *Ajarokallahu fimaa a'thoita wa baroka fiima abqoita wa ja'alahu laka thohuro.*
 
-Program : {program}
-Nominal : Rp {nominal}
-Periode : {periode}
+    _Semoga Allah memberikan ganjaran (pahala) terhadap engkau dan semoga Allah memberikan keberkahan terhadap harta yang engkau sisakan, dan menjadikannya sebagai pensuci bagi engkau._
 
-Perubahan:
-{perubahan}
+    Assalamu'alaikum Warahmatullahi Wabarakatuh.
 
-Terima kasih atas partisipasi Anda dalam program sedekah kami.`
+    Yth. Bapak/Ibu *{nama}*
+    *Pemegang Kartu {nomor_kode}*
+
+    Kami informasikan bahwa data donasi/infaq Anda telah *diperbarui* dengan rincian sebagai berikut:
+
+    *Program* : {program}
+    *Periode* : {periode}
+    *Nominal* : Rp {nominal}
+
+    *Perubahan Data:*
+    {perubahan}
+
+    Mohon memastikan kembali data di atas sudah sesuai.
+
+    Terima kasih atas kepercayaan Bapak/Ibu kepada UPZISNU CARE-LAZISNU DESA UNDAAN LOR. Semoga Allah menerima amal ibadah Bapak/Ibu, melimpahkan keberkahan rezeki, serta menjadikan donasi ini sebagai amal jariyah yang pahalanya terus mengalir. Aamiin.
+
+    *#KOIN INUK untuk Kemandirian Nahdlatul Ulama*
+
+    Informasi lengkap, follow, share & like akun resmi
+    UPZISNU DESA UNDAAN LOR
+
+    Instagram : @upzisnuundaanlor
+    Facebook : Upzisnu Undaan Lor
+
+    _Call Center_ : *0858-6550-5597*
+
+    *Info Rekening*
+    Bank BRI
+    5930 01 042074 53 8
+    a.n. UPZIS NU Undaan Lor`
 
     },
 
@@ -201,16 +253,41 @@ Terima kasih atas partisipasi Anda dalam program sedekah kami.`
 
         variables: [
             'nama',
+            'nomor_kode',
             'program'
         ],
 
-        isi: `Assalamu'alaikum {nama},
+        isi: `*Bismillahirrahmanirrahim*
 
-Data donasi pada program *{program}* telah dihapus dari sistem.
+    *Ajarokallahu fimaa a'thoita wa baroka fiima abqoita wa ja'alahu laka thohuro.*
 
-Apabila terdapat kekeliruan, silakan menghubungi admin.
+    _Semoga Allah memberikan ganjaran (pahala) terhadap engkau dan semoga Allah memberikan keberkahan terhadap harta yang engkau sisakan, dan menjadikannya sebagai pensuci bagi engkau._
 
-Terima kasih.`
+    Assalamu'alaikum Warahmatullahi Wabarakatuh.
+
+    Yth. Bapak/Ibu *{nama}*
+    *Pemegang Kartu {nomor_kode}*
+
+    Kami informasikan bahwa data donasi/infaq pada program *{program}* telah dihapus dari data administrasi kami.
+
+    Apabila penghapusan data ini bukan atas permintaan Bapak/Ibu atau terdapat kekeliruan, silakan menghubungi admin agar dapat segera kami tindak lanjuti.
+
+    Terima kasih atas kepercayaan Bapak/Ibu kepada UPZISNU CARE-LAZISNU DESA UNDAAN LOR.
+
+    *#KOIN INUK untuk Kemandirian Nahdlatul Ulama*
+
+    Informasi lengkap, follow, share & like akun resmi
+    UPZISNU DESA UNDAAN LOR
+
+    Instagram : @upzisnuundaanlor
+    Facebook : Upzisnu Undaan Lor
+
+    _Call Center_ : *0858-6550-5597*
+
+    *Info Rekening*
+    Bank BRI
+    5930 01 042074 53 8
+    a.n. UPZIS NU Undaan Lor`
 
     }
 

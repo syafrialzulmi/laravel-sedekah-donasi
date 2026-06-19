@@ -177,11 +177,18 @@ class DonasiController extends Controller
             'program',
         ]);
 
+        $periode = Carbon::createFromDate(
+            $donasi->tahun,
+            $donasi->bulan,
+            1
+        )->locale('id')->translatedFormat('F Y');
+
         $pesan = WaTemplateService::render('DONASI_BARU', [
             'nama' => $donasi->donatur->nama,
+            'nomor_kode' => $donasi->donatur->nomor_kode,
             'program' => $donasi->program->nama_program,
             'nominal' => number_format($donasi->nominal, 0, ',', '.'),
-            'periode' => $donasi->bulan.' '.$donasi->tahun,
+            'periode' => $periode,
         ]);
 
         return redirect()
@@ -325,11 +332,18 @@ class DonasiController extends Controller
             ? implode("\n", $changes)
             : '- Tidak ada perubahan.';
 
+        $periode = Carbon::createFromDate(
+            $donasi->tahun,
+            $donasi->bulan,
+            1
+        )->locale('id')->translatedFormat('F Y');
+
         $pesan = WaTemplateService::render('DONASI_UPDATE', [
             'nama' => $donasi->donatur->nama,
+            'nomor_kode' => $donasi->donatur->nomor_kode,
             'program' => $donasi->program->nama_program,
             'nominal' => number_format($donasi->nominal, 0, ',', '.'),
-            'periode' => $donasi->bulan.' '.$donasi->tahun,
+            'periode' => $periode,
             'perubahan' => $perubahan,
         ]);
 

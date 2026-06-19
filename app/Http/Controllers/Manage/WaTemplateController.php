@@ -54,6 +54,7 @@ class WaTemplateController extends Controller
     {
         $placeholders = [
             'nama',
+            'nomor_kode',
             'program',
             'nominal',
             'periode',
@@ -118,6 +119,7 @@ class WaTemplateController extends Controller
 
         $placeholders = [
             'nama',
+            'nomor_kode',
             'program',
             'nominal',
             'periode',
