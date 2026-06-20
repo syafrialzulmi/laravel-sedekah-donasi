@@ -15,11 +15,11 @@ class DasborController extends Controller
         $totalDonasi = Donasi::sum('nominal');
 
         $totalDonasiInuk = Donasi::whereHas('program', function ($q) {
-            $q->where('nama_program', 'inuk');
+            $q->where('nama_program', 'ilike', '%inuk%');
         })->sum('nominal');
 
         $totalDonasiMandiri = Donasi::whereHas('program', function ($q) {
-            $q->where('nama_program', 'mandiri');
+            $q->where('nama_program', 'ilike', '%mandiri%');
         })->sum('nominal');
 
         $driver = DB::connection()->getDriverName();
