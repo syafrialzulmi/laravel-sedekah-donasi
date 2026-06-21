@@ -14,13 +14,15 @@ class DasborController extends Controller
 
         $totalDonasi = Donasi::sum('nominal');
 
-        $totalDonasiInuk = Donasi::whereHas('program', function ($q) {
-            $q->where('nama_program', 'ilike', '%inuk%');
-        })->sum('nominal');
-
-        $totalDonasiMandiri = Donasi::whereHas('program', function ($q) {
-            $q->where('nama_program', 'ilike', '%mandiri%');
-        })->sum('nominal');
+        $donasiPerProgram = Donasi::select(
+            'program_sedekah.id',
+            'program_sedekah.nama_program',
+            DB::raw('SUM(donasi.nominal) as total_donasi')
+        )
+            ->join('program_sedekah', 'program_sedekah.id', '=', 'donasi.program_id')
+            ->groupBy('program_sedekah.id', 'program_sedekah.nama_program')
+            ->orderBy('program_sedekah.nama_program')
+            ->get();
 
         $driver = DB::connection()->getDriverName();
         // Grafik 12 bulan
@@ -56,8 +58,7 @@ class DasborController extends Controller
         return view('pages.admin.dasbor', compact(
             'totalDonatur',
             'totalDonasi',
-            'totalDonasiInuk',
-            'totalDonasiMandiri',
+            'donasiPerProgram',
             'labels',
             'series',
             'latestDonasi'

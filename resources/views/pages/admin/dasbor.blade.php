@@ -64,59 +64,37 @@
             </div>
         </div>
 
-        {{-- Total Donasi Inuk --}}
+        @foreach($donasiPerProgram as $program)
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-body d-flex align-items-center">
 
                     <div class="rounded-4 d-flex align-items-center justify-content-center me-3"
                         style="width:70px;height:70px;background:#7A4DDF;">
-                        <i class="fa-solid fa-seedling text-white fs-2"></i>
+                        <i class="fa-solid fa-hand-holding-heart text-white fs-2"></i>
                     </div>
 
                     <div>
-                        <small class="text-muted">Total Donasi <strong>Inuk</strong></small>
+                        <small class="text-muted">
+                            Total Donasi <strong>{{ $program->nama_program }}</strong>
+                        </small>
 
                         <h4 class="fw-bold mb-1">
-                            Rp {{ number_format($totalDonasiInuk,0,',','.') }}
+                            Rp {{ number_format($program->total_donasi,0,',','.') }}
                         </h4>
 
                         <small class="text-success">
                             <i class="fa-solid fa-arrow-trend-up"></i>
-                            Program Inuk
+                            Program {{ $program->nama_program }}
                         </small>
                     </div>
 
                 </div>
             </div>
         </div>
+        @endforeach
 
-        {{-- Total Donasi Mandiri --}}
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body d-flex align-items-center">
 
-                    <div class="rounded-4 d-flex align-items-center justify-content-center me-3"
-                        style="width:70px;height:70px;background:#F3A533;">
-                        <i class="fa-solid fa-house-heart text-white fs-2"></i>
-                    </div>
-
-                    <div>
-                        <small class="text-muted">Total Donasi <strong>Mandiri</strong></small>
-
-                        <h4 class="fw-bold mb-1">
-                            Rp {{ number_format($totalDonasiMandiri,0,',','.') }}
-                        </h4>
-
-                        <small class="text-success">
-                            <i class="fa-solid fa-arrow-trend-up"></i>
-                            Program Mandiri
-                        </small>
-                    </div>
-
-                </div>
-            </div>
-        </div>
 
     </div>
 
