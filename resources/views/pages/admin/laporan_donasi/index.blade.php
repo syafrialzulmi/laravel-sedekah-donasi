@@ -14,7 +14,7 @@
                 <h5 class="mb-0">Laporan Donasi</h5>
                 <small class="text-muted">Daftar Laporan Donasi.</small>
             </div>
-            <form action="{{ route('backup.database') }}"
+            {{-- <form action="{{ route('backup.database') }}"
                 method="POST"
                 onsubmit="return confirm('Apakah Anda yakin ingin melakukan backup database?')">
 
@@ -26,7 +26,7 @@
                     Backup Database
                 </button>
 
-            </form>
+            </form> --}}
         </div>
 
         <div class="card">
