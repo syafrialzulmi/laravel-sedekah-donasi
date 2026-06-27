@@ -75,11 +75,11 @@ class MenuSeeder extends Seeder
             // ],
         ]);
 
-        DB::statement("
-            SELECT setval(
-                pg_get_serial_sequence('menus', 'id'),
-                COALESCE((SELECT MAX(id) FROM menus), 1)
-            );
-        ");
+        // DB::statement("
+        //     SELECT setval(
+        //         pg_get_serial_sequence('menus', 'id'),
+        //         COALESCE((SELECT MAX(id) FROM menus), 1)
+        //     );
+        // ");
     }
 }
