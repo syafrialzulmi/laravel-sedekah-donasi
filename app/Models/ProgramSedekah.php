@@ -14,6 +14,7 @@ class ProgramSedekah extends Model
         'jenis_target',
         'target_dana',
         'status',
+        'kode',
     ];
 
     protected $casts = [

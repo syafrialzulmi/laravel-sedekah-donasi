@@ -44,6 +44,28 @@
 
                 <div class="col-md-6">
                     <div class="mb-3">
+                        <label for="kode" class="form-label">
+                            Kode Program <span class="text-danger">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            class="form-control form-control-sm @error('kode') is-invalid @enderror"
+                            id="kode"
+                            name="kode"
+                            value="{{ old('kode', $item->kode ?? '') }}"
+                            required
+                        >
+
+                        @error('kode')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mb-3">
                         <label for="status" class="form-label">
                             Status <span class="text-danger">*</span>
                         </label>

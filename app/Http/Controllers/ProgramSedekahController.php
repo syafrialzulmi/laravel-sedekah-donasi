@@ -5,17 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\ProgramSedekah;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
 
 class ProgramSedekahController extends Controller
 {
-    function __construct()
+    public function __construct()
     {
-         $this->middleware('permission:program-sedekah-list|program-sedekah-create|program-sedekah-edit|program-sedekah-delete', ['only' => ['index','show']]);
-         $this->middleware('permission:program-sedekah-create', ['only' => ['create','store']]);
-         $this->middleware('permission:program-sedekah-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:program-sedekah-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:program-sedekah-list|program-sedekah-create|program-sedekah-edit|program-sedekah-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:program-sedekah-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:program-sedekah-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:program-sedekah-delete', ['only' => ['destroy']]);
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -23,7 +23,7 @@ class ProgramSedekahController extends Controller
     {
         $allowedPageSizes = [5, 10, 20, 50];
         $ps = (int) $request->input('ps', 10);
-        if (!in_array($ps, $allowedPageSizes, true)) {
+        if (! in_array($ps, $allowedPageSizes, true)) {
             $ps = 10;
         }
 
@@ -37,7 +37,7 @@ class ProgramSedekahController extends Controller
             })
             ->latest()
             ->paginate($ps)
-            ->appends($request->only('ps','q'));
+            ->appends($request->only('ps', 'q'));
 
         return view('pages.admin.program_sedekah.index', [
             'data' => $data,
@@ -61,6 +61,7 @@ class ProgramSedekahController extends Controller
         $validated = $request->validate([
             'nama_program' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
+            'kode' => 'nullable|string',
             'jenis_target' => 'required|in:sukarela,target',
             'target_dana' => 'nullable|numeric|min:0',
             'status' => 'required|in:draft,aktif,selesai,ditutup',
@@ -102,6 +103,7 @@ class ProgramSedekahController extends Controller
         $validated = $request->validate([
             'nama_program' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
+            'kode' => 'nullable|string',
             'jenis_target' => 'required|in:sukarela,target',
             'target_dana' => 'required_if:jenis_target,target|nullable|numeric|min:0',
             'status' => 'required|in:draft,aktif,selesai,ditutup',

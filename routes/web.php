@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DasborController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\DonaturController;
+use App\Http\Controllers\ImportMunfiqController;
 use App\Http\Controllers\LaporanDonasiController;
 use App\Http\Controllers\Manage\BackupController;
 use App\Http\Controllers\Manage\MenuController;
@@ -12,11 +13,10 @@ use App\Http\Controllers\Manage\SettingAppController;
 use App\Http\Controllers\Manage\UserController;
 use App\Http\Controllers\Manage\WaTemplateController;
 use App\Http\Controllers\ProgramSedekahController;
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [WelcomeController::class, 'index']);
 
 Route::middleware('guest')->group(function () {
     Route::get('/registrasi', [AuthController::class, 'showFormRegistrasi'])->name('registrasi');
@@ -92,6 +92,18 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/laporan-donasi/print', [LaporanDonasiController::class, 'print'])
             ->name('laporan-donasi.print');
         Route::resource('/laporan-donasi', LaporanDonasiController::class);
+
+        Route::get('/import-munfiq/review', [ImportMunfiqController::class, 'review'])
+            ->name('import-munfiq.review');
+        Route::post('/import-munfiq/import', [ImportMunfiqController::class, 'import'])
+            ->name('import.munfiq');
+        Route::post('/import-munfiq/sync', [ImportMunfiqController::class, 'sync'])
+            ->name('import-munfiq.sync');
+        Route::put('/import-munfiq/{importMunfiq}', [ImportMunfiqController::class, 'update'])
+            ->name('import-munfiq.update');
+        Route::delete('/import-munfiq/truncate', [ImportMunfiqController::class, 'truncate'])
+            ->name('import-munfiq.truncate');
+        Route::resource('/import-munfiq', ImportMunfiqController::class);
     });
 
 });

@@ -57,6 +57,7 @@
                       <tr>
                         <th style="width:72px;">No</th>
                         <th>Program Sedekah</th>
+                        <th width="100">Kode</th>
                         <th width="150">Jenis Target</th>
                         <th width="180">Target Dana</th>
                         <th width="120">Status</th>
@@ -79,6 +80,9 @@
                                   </small>
                               @endif
                           </div>
+                      </td>
+                      <td>
+                        {{ $item->kode }}
                       </td>
 
                       <td>
