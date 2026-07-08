@@ -31,7 +31,7 @@
                 <div class="col-md-8">
                     <form method="GET" action="{{ route('import-munfiq.review') }}" class="row g-2 mb-3">
                         <div class="row align-items-end">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label">Gang</label>
                                 <select name="gang"
                                         class="form-select"
@@ -45,7 +45,8 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-3">
+
+                            <div class="col-md-2">
                                 <label class="form-label">Jenis Kode</label>
 
                                 <select name="kode"
@@ -76,14 +77,36 @@
 
                                 </select>
                             </div>
-                            @if(request('gang') || request('kode'))
-                            <div class="col-md-2">
-                                <a href="{{ route('import-munfiq.review') }}"
-                                class="btn btn-outline-secondary w-100">
-                                    Reset
-                                </a>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Cari Nama / Kode</label>
+
+                                <input type="text"
+                                    name="q"
+                                    class="form-control"
+                                    placeholder="Masukkan nama atau kode..."
+                                    value="{{ request('q') }}">
                             </div>
-                            @endif
+
+                            <div class="col-md-3 d-flex align-items-end gap-2">
+
+                                <button class="btn btn-primary">
+                                    <i class="bx bx-search"></i>
+                                    Cari
+                                </button>
+
+                                @if(request()->filled('gang') ||
+                                    request()->filled('kode') ||
+                                    request()->filled('q'))
+
+                                    <a href="{{ route('import-munfiq.review') }}"
+                                    class="btn btn-outline-secondary">
+                                        Reset
+                                    </a>
+
+                                @endif
+
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -223,6 +246,23 @@
                 </div>
             @endif
 
+            @php
+                $bulan = [
+                    'jan'  => 'Januari',
+                    'feb'  => 'Februari',
+                    'mar'  => 'Maret',
+                    'apr'  => 'April',
+                    'mei'  => 'Mei',
+                    'jun'  => 'Juni',
+                    'jul'  => 'Juli',
+                    'agt'  => 'Agustus',
+                    'sept' => 'September',
+                    'okt'  => 'Oktober',
+                    'nov'  => 'November',
+                    'des'  => 'Desember',
+                ];
+            @endphp
+
             <div class="table-responsive">
                 <table class="table table-bordered table-striped">
                     <thead>
@@ -233,18 +273,9 @@
                         <th>Kode</th>
                         <th>Nama</th>
                         <th>No HP</th>
-                        <th>Jan</th>
-                        <th>Feb</th>
-                        <th>Mar</th>
-                        <th>Apr</th>
-                        <th>Mei</th>
-                        <th>Jun</th>
-                        <th>Jul</th>
-                        <th>Agt</th>
-                        <th>Sept</th>
-                        <th>Okt</th>
-                        <th>Nov</th>
-                        <th>Des</th>
+                        @foreach($bulan as $field => $label)
+                            <th>{{ $label }}</th>
+                        @endforeach
                     </tr>
                     </thead>
                     <tbody>
@@ -274,18 +305,38 @@
                         <td>{{ $item->kode }}</td>
                         <td>{{ $item->nama }}</td>
                         <td>{{ $item->no_hp }}</td>
-                        <td>{{ $item->jan }}</td>
-                        <td>{{ $item->feb }}</td>
-                        <td>{{ $item->mar }}</td>
-                        <td>{{ $item->apr }}</td>
-                        <td>{{ $item->mei }}</td>
-                        <td>{{ $item->jun }}</td>
-                        <td>{{ $item->jul }}</td>
-                        <td>{{ $item->agt }}</td>
-                        <td>{{ $item->sept }}</td>
-                        <td>{{ $item->okt }}</td>
-                        <td>{{ $item->nov }}</td>
-                        <td>{{ $item->des }}</td>
+
+                        @foreach($bulan as $field => $label)
+
+                            <td>
+
+                                <div class="d-flex justify-content-between align-items-center">
+
+                                    <span>
+                                        {{ $item->$field ? number_format($item->$field) : '-' }}
+                                    </span>
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-primary btn-edit-nominal"
+
+                                        data-id="{{ $item->id }}"
+                                        data-bulan="{{ $field }}"
+                                        data-label="{{ $label }}"
+                                        data-nominal="{{ $item->$field }}"
+
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editNominalModal">
+
+                                        <i class="bx bx-pencil"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        @endforeach
                     </tr>
                     @endforeach
                     </tbody>
@@ -845,6 +896,111 @@
         </form>
     </div>
 </div>
+
+<div class="modal fade"
+     id="editNominalModal"
+     tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <form method="POST" id="formNominal">
+
+            @csrf
+            @method('PUT')
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5>
+                        Edit Nominal
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Bulan
+                        </label>
+
+                        <input
+                            type="text"
+                            id="bulanLabel"
+                            class="form-control"
+                            readonly>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Nominal
+                        </label>
+
+                        <input
+                            type="number"
+                            min="0"
+                            class="form-control"
+                            id="nominal"
+                            name="nominal">
+
+                    </div>
+
+                    <input
+                        type="hidden"
+                        id="bulan"
+                        name="bulan">
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-outline-danger"
+                        id="btnKosongkan">
+
+                        <i class="bx bx-eraser me-1"></i>
+                        Kosongkan
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                        Batal
+
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary">
+
+                        <i class="bx bx-save me-1"></i>
+                        Simpan
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
 @endsection
 
 @push('scripts')
@@ -869,6 +1025,39 @@ document.querySelectorAll('.btn-edit').forEach(function(btn){
             "/admin/transaksi/import-munfiq/"+id;
 
     });
+
+});
+
+</script>
+
+<script>
+
+document.querySelectorAll('.btn-edit-nominal').forEach(function(btn){
+
+    btn.addEventListener('click', function(){
+
+        document.getElementById('bulan').value=this.dataset.bulan;
+
+        document.getElementById('bulanLabel').value=this.dataset.label;
+
+        document.getElementById('nominal').value=this.dataset.nominal ?? '';
+
+        document.getElementById('formNominal').action=
+            "/admin/transaksi/import-munfiq/"+this.dataset.id+"/nominal";
+
+    });
+
+});
+
+document.getElementById('btnKosongkan').addEventListener('click', function () {
+
+    if (!confirm('Kosongkan nominal bulan ini?')) {
+        return;
+    }
+
+    document.getElementById('nominal').value = '';
+
+    document.getElementById('formNominal').submit();
 
 });
 

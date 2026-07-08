@@ -120,6 +120,7 @@ class ImportMunfiqController extends Controller
     {
         $gang = $request->gang;
         $kode = $request->kode;
+        $q = trim($request->q);
 
         $query = ImportMunfiq::query();
 
@@ -153,6 +154,15 @@ class ImportMunfiqController extends Controller
                         ->where('kode', 'not like', 'ULM-%');
                 });
 
+        }
+
+        if ($q) {
+            $query->where(function ($x) use ($q) {
+
+                $x->where('nama', 'like', "%{$q}%")
+                ->orWhere('kode', 'like', "%{$q}%");
+
+            });
         }
 
         // $data = $query
@@ -382,6 +392,7 @@ class ImportMunfiqController extends Controller
             'gangList',
             'gang',
             'kode',
+            'q',
             'statistik',
             'nominal',
             'dashboard',
@@ -609,5 +620,21 @@ class ImportMunfiqController extends Controller
         return redirect()
             ->route('import-munfiq.index')
             ->with('success', 'Seluruh data hasil import berhasil dihapus.');
+    }
+
+    public function updateNominal(Request $request, ImportMunfiq $importMunfiq)
+    {
+        $request->validate([
+            'bulan' => 'required|in:jan,feb,mar,apr,mei,jun,jul,agt,sept,okt,nov,des',
+            'nominal' => 'nullable|numeric|min:0',
+        ]);
+
+        $importMunfiq->update([
+            $request->bulan => $request->filled('nominal')
+                ? $request->nominal
+                : null,
+        ]);
+
+        return back()->with('success', 'Nominal berhasil diperbarui.');
     }
 }

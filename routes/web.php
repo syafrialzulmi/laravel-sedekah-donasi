@@ -103,6 +103,8 @@ Route::group(['middleware' => ['auth']], function () {
             ->name('import-munfiq.update');
         Route::delete('/import-munfiq/truncate', [ImportMunfiqController::class, 'truncate'])
             ->name('import-munfiq.truncate');
+        Route::put('/import-munfiq/{importMunfiq}/nominal', [ImportMunfiqController::class,'updateNominal'])
+            ->name('import-munfiq.updateNominal');
         Route::resource('/import-munfiq', ImportMunfiqController::class);
     });
 
