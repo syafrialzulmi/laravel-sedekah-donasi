@@ -91,6 +91,8 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('/laporan-donasi/print', [LaporanDonasiController::class, 'print'])
             ->name('laporan-donasi.print');
+        Route::get('/laporan-donasi/print-rekap', [LaporanDonasiController::class, 'printRekap'])
+            ->name('laporan-donasi.print-rekap');
         Route::resource('/laporan-donasi', LaporanDonasiController::class);
 
         Route::get('/import-munfiq/review', [ImportMunfiqController::class, 'review'])

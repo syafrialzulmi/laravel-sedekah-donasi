@@ -36,9 +36,15 @@ class LaporanDonasiController extends Controller
         $tahun = $request->tahun ?? date('Y');
         $gang = $request->input('gang');
 
+        $program = ProgramSedekah::find($programId);
+
+        // UL-0001 -> Inuk UL , ULM-0001 -> Mandiri ULM
         $donaturList = Donatur::query()
             ->when($gang, function ($query) use ($gang) {
                 $query->where('gang', $gang);
+            })
+            ->when($program, function ($query) use ($program) {
+                $query->where('nomor_kode', 'like', $program->kode . '-%');
             })
             ->orderBy('gang')
             ->orderBy('nomor_kode')
@@ -60,6 +66,29 @@ class LaporanDonasiController extends Controller
             $pivot[$item->donatur_id][$item->bulan] = $item->total_nominal;
         }
 
+        $rekapBulanan = Donasi::query()
+            ->selectRaw("
+                bulan,
+                CASE
+                    WHEN donatur.gang = 12 AND donatur.alamat LIKE '%12A%' THEN '12A'
+                    WHEN donatur.gang = 12 AND donatur.alamat LIKE '%12B%' THEN '12B'
+                    ELSE CAST(donatur.gang AS CHAR)
+                END AS gang_group,
+                SUM(donasi.nominal) AS total
+            ")
+            ->join('donatur', 'donatur.id', '=', 'donasi.donatur_id')
+            ->where('donasi.tahun', $tahun)
+            ->where('donasi.program_id', $programId)
+            ->groupBy('bulan', 'gang_group')
+            ->orderBy('bulan')
+            ->get();
+
+        $rekap = [];
+
+        foreach ($rekapBulanan as $item) {
+            $rekap[$item->bulan][$item->gang_group] = $item->total;
+        }
+
         return view('pages.admin.laporan_donasi.index', [
             'tahun' => $tahun,
             'programId' => $programId,
@@ -68,6 +97,7 @@ class LaporanDonasiController extends Controller
             'pivot' => $pivot,
             'programs' => $programs,
             'years' => $years,
+            'rekap' => $rekap,
         ]);
     }
 
@@ -133,6 +163,9 @@ class LaporanDonasiController extends Controller
             ->when($gang, function ($query) use ($gang) {
                 $query->where('gang', $gang);
             })
+            ->when($program, function ($query) use ($program) {
+                $query->where('nomor_kode', 'like', $program->kode . '-%');
+            })
             ->orderBy('gang')
             ->orderBy('nomor_kode')
             ->get();
@@ -155,6 +188,10 @@ class LaporanDonasiController extends Controller
 
         $filename = 'laporan_donasi_'.now()->format('Ymd_His').'.pdf';
 
+        // dd($donaturList->count());
+        ini_set('memory_limit', '1024M');
+        set_time_limit(300);
+
         $pdf = Pdf::loadView('pages.admin.laporan_donasi.pdf', [
             'tahun' => $tahun,
             'gang' => $gang,
@@ -165,5 +202,42 @@ class LaporanDonasiController extends Controller
         ])->setPaper('a4', 'landscape');
 
         return $pdf->stream($filename);
+    }
+
+    public function printRekap(Request $request)
+    {
+        $programId = $request->input('program_id', 1);
+        $tahun = $request->input('tahun', date('Y'));
+
+        $rekapBulanan = Donasi::query()
+            ->selectRaw("
+                bulan,
+                CASE
+                    WHEN donatur.gang = 12 AND donatur.alamat LIKE '%12A%' THEN '12A'
+                    WHEN donatur.gang = 12 AND donatur.alamat LIKE '%12B%' THEN '12B'
+                    ELSE CAST(donatur.gang AS CHAR)
+                END AS gang_group,
+                SUM(donasi.nominal) AS total
+            ")
+            ->join('donatur', 'donatur.id', '=', 'donasi.donatur_id')
+            ->where('donasi.tahun', $tahun)
+            ->where('donasi.program_id', $programId)
+            ->groupBy('bulan', 'gang_group')
+            ->get();
+
+        $rekap = [];
+
+        foreach ($rekapBulanan as $item) {
+            $rekap[$item->bulan][$item->gang_group] = $item->total;
+        }
+
+        $program = ProgramSedekah::find($programId);
+
+        $pdf = Pdf::loadView(
+            'pages.admin.laporan_donasi.pdf_rekap',
+            compact('rekap', 'program', 'tahun')
+        )->setPaper('a4', 'landscape');
+
+        return $pdf->stream('rekap_donasi.pdf');
     }
 }

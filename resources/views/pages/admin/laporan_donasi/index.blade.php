@@ -98,6 +98,14 @@
                             Cetak
                         </a>
 
+                        <button type="button"
+                                class="btn btn-info"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalRekapBulanan">
+                            <i class="fa fa-table me-1"></i>
+                            Rekap Bulanan
+                        </button>
+
                     </div>
 
                 </form>
@@ -201,6 +209,163 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade"
+     id="modalRekapBulanan"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Rekap Donasi Bulanan per Gang
+                </h5>
+
+                <div class="d-flex gap-2">
+
+                    <a href="{{ route('laporan-donasi.print-rekap', request()->query()) }}"
+                    target="_blank"
+                    class="btn btn-danger btn-sm">
+                        <i class="fa fa-file-pdf me-1"></i>
+                        Cetak PDF
+                    </a>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"></button>
+
+                </div>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="table-responsive">
+
+                    @php
+                    $gangs = [];
+
+                    for($i=1;$i<=11;$i++){
+                        $gangs[] = $i;
+                    }
+
+                    $gangs[] = '12A';
+                    $gangs[] = '12B';
+
+                    for($i=13;$i<=32;$i++){
+                        $gangs[] = $i;
+                    }
+                    @endphp
+
+                    <table class="table table-bordered table-sm">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>Bulan</th>
+
+                                @foreach($gangs as $gang)
+                                    <th>G{{ $gang }}</th>
+                                @endforeach
+
+                                <th>Total</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        @php
+
+                        $namaBulan = [
+                            1=>'Jan',2=>'Feb',3=>'Mar',4=>'Apr',
+                            5=>'Mei',6=>'Jun',7=>'Jul',8=>'Agu',
+                            9=>'Sep',10=>'Okt',11=>'Nov',12=>'Des'
+                        ];
+
+                        $totalGang = [];
+
+                        foreach($gangs as $gang){
+                            $totalGang[$gang] = 0;
+                        }
+
+                        $grandTotal = 0;
+
+                        @endphp
+
+                        @for($bulan=1;$bulan<=12;$bulan++)
+
+                            @php
+                                $totalPerBulan=0;
+                            @endphp
+
+                            <tr>
+
+                                <td>{{ $namaBulan[$bulan] }}</td>
+
+                                @foreach($gangs as $gang)
+
+                                    @php
+                                        $nominal = $rekap[$bulan][$gang] ?? 0;
+
+                                        $totalPerBulan += $nominal;
+                                        $totalGang[$gang] += $nominal;
+                                    @endphp
+
+                                    <td class="text-end">
+                                        {{ $nominal ? number_format($nominal,0,',','.') : '-' }}
+                                    </td>
+
+                                @endforeach
+
+                                @php
+                                    $grandTotal += $totalPerBulan;
+                                @endphp
+
+                                <td class="text-end fw-bold">
+                                    {{ number_format($totalPerBulan,0,',','.') }}
+                                </td>
+
+                            </tr>
+
+                        @endfor
+
+                        </tbody>
+
+                        <tfoot class="table-light">
+
+                            <tr>
+
+                                <th>Total</th>
+
+                                @foreach($gangs as $gang)
+
+                                    <th class="text-end">
+                                        {{ number_format($totalGang[$gang],0,',','.') }}
+                                    </th>
+
+                                @endforeach
+
+                                <th class="text-end">
+                                    {{ number_format($grandTotal,0,',','.') }}
+                                </th>
+
+                            </tr>
+
+                        </tfoot>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
 @endsection

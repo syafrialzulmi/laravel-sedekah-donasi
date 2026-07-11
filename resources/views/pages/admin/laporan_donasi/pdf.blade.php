@@ -107,7 +107,7 @@
 
         <th width="30">No</th>
         <th width="60">Nomor Kode</th>
-        <th width="180">Nama Donatur</th>
+        <th width="100">Nama Donatur</th>
 
         <th>Jan</th>
         <th>Feb</th>
@@ -162,7 +162,11 @@
                 </div>
 
                 <div class="small">
-                    Gang {{ $donatur->gang }}
+                    @if($donatur->gang == 12)
+                        {{ $donatur->alamat }}
+                    @else
+                        Gang {{ $donatur->gang }}
+                    @endif
                     |
                     {{ $donatur->no_hp }}
                 </div>
