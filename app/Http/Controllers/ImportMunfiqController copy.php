@@ -120,6 +120,22 @@ class ImportMunfiqController extends Controller
     {
         $gang = $request->gang;
         $kode = $request->kode;
+        $selectedBulan = $request->bulan;
+
+        $bulanList = [
+            'jan'  => 'JAN',
+            'feb'  => 'FEB',
+            'mar'  => 'MAR',
+            'apr'  => 'APR',
+            'mei'  => 'MEI',
+            'jun'  => 'JUN',
+            'jul'  => 'JUL',
+            'agt'  => 'AGT',
+            'sept' => 'SEPT',
+            'okt'  => 'OKT',
+            'nov'  => 'NOV',
+            'des'  => 'DES',
+        ];
         $q = trim($request->q);
 
         $query = ImportMunfiq::query();
@@ -156,6 +172,13 @@ class ImportMunfiqController extends Controller
 
         }
 
+        if (!empty($bulan)) {
+            $query->where(function ($q) use ($bulan) {
+                $q->whereNotNull($bulan)
+                ->where($bulan, '>', 0);
+            });
+        }
+
         if ($q) {
             $query->where(function ($x) use ($q) {
 
@@ -165,11 +188,6 @@ class ImportMunfiqController extends Controller
             });
         }
 
-        // $data = $query
-        //     ->orderBy('sheet_name')
-        //     ->orderBy('no')
-        //     ->paginate(100)
-        //     ->withQueryString();
         $data = $query
             ->orderByRaw("
                 CAST(COALESCE(REGEXP_SUBSTR(sheet_name, '[0-9]+'),0) AS UNSIGNED)
@@ -327,10 +345,6 @@ class ImportMunfiqController extends Controller
             'des' => 'DES',
         ];
 
-        // $gangs = ImportMunfiq::select('sheet_name')
-        //     ->distinct()
-        //     ->orderBy('sheet_name')
-        //     ->pluck('sheet_name');
         $gangs = ImportMunfiq::select('sheet_name')
             ->distinct()
             ->orderGang()
@@ -392,6 +406,8 @@ class ImportMunfiqController extends Controller
             'gangList',
             'gang',
             'kode',
+            'selectedBulan',
+            'bulanList',
             'q',
             'statistik',
             'nominal',
@@ -506,26 +522,9 @@ class ImportMunfiqController extends Controller
     {
         $request->validate([
             'tahun' => ['required', 'digits:4'],
-            'bulan' => ['required'],
         ]);
 
         $tahun = $request->tahun;
-        $bulan = $request->bulan;
-
-        $bulanMap = [
-            1  => 'jan',
-            2  => 'feb',
-            3  => 'mar',
-            4  => 'apr',
-            5  => 'mei',
-            6  => 'jun',
-            7  => 'jul',
-            8  => 'agt',
-            9  => 'sept',
-            10 => 'okt',
-            11 => 'nov',
-            12 => 'des',
-        ];
 
         $setting = SettingApp::first();
 
@@ -533,11 +532,7 @@ class ImportMunfiqController extends Controller
         $kecamatanId = $setting?->kecamatan_id;
 
         try {
-            DB::transaction(function () use ($tahun,
-                $bulan,
-                $bulanMap,
-                $desaId,
-                $kecamatanId) {
+            DB::transaction(function () use ($tahun, $desaId, $kecamatanId) {
                 $programs = ProgramSedekah::pluck('id', 'kode');
                 $rows = ImportMunfiq::all();
 
@@ -581,36 +576,38 @@ class ImportMunfiqController extends Controller
                     // Donasi
                     // ============================
                     if ($programId) {
-                        // Jika pilih satu bulan, filter mapping
-                        $bulanImport = $bulanMap;
+                        $bulanMap = [
+                            1 => 'jan',
+                            2 => 'feb',
+                            3 => 'mar',
+                            4 => 'apr',
+                            5 => 'mei',
+                            6 => 'jun',
+                            7 => 'jul',
+                            8 => 'agt',
+                            9 => 'sept',
+                            10 => 'okt',
+                            11 => 'nov',
+                            12 => 'des',
+                        ];
 
-                        if ($bulan !== 'semua') {
-                            $bulanImport = array_filter(
-                                $bulanMap,
-                                fn($field) => $field === $bulan
-                            );
-                        }
-
-                        foreach ($bulanImport as $noBulan => $field) {
-
+                        foreach ($bulanMap as $bulan => $field) {
                             $nominal = $row->$field;
-
-                            if (empty($nominal) || $nominal <= 0) {
+                            if (empty($nominal)) {
                                 continue;
                             }
-
                             Donasi::updateOrCreate(
                                 [
                                     'donatur_id' => $donatur->id,
                                     'program_id' => $programId,
-                                    'bulan'       => $noBulan,
-                                    'tahun'       => $tahun,
+                                    'bulan' => $bulan,
+                                    'tahun' => $tahun,
                                 ],
                                 [
-                                    'nominal'         => $nominal,
-                                    'tanggal_donasi'  => sprintf('%04d-%02d-25', $tahun, $noBulan),
-                                    'keterangan'      => 'Import Excel',
-                                    'user_id'         => auth()->id(),
+                                    'nominal' => $nominal,
+                                    'tanggal_donasi' => sprintf('%04d-%02d-25', $tahun, $bulan),
+                                    'keterangan' => 'Import Excel',
+                                    'user_id' => auth()->id(),
                                 ]
                             );
                         }

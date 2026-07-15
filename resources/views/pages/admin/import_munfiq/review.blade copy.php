@@ -53,7 +53,7 @@
                                         class="form-select"
                                         onchange="this.form.submit()">
 
-                                    <option value="">Semua</option>
+                                    <option value="">-- Semua Jenis Kode --</option>
 
                                     <option value="UL"
                                         {{ request('kode') == 'UL' ? 'selected' : '' }}>
@@ -78,7 +78,43 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-2">
+                                <label class="form-label">Bulan</label>
+
+                                <select name="bulan"
+                                        class="form-select"
+                                        onchange="this.form.submit()">
+
+                                    <option value="">-- Semua Bulan --</option>
+
+                                    @php
+                                        $bulanList = [
+                                            'jan'=>'Januari',
+                                            'feb'=>'Februari',
+                                            'mar'=>'Maret',
+                                            'apr'=>'April',
+                                            'mei'=>'Mei',
+                                            'jun'=>'Juni',
+                                            'jul'=>'Juli',
+                                            'agt'=>'Agustus',
+                                            'sept'=>'September',
+                                            'okt'=>'Oktober',
+                                            'nov'=>'November',
+                                            'des'=>'Desember',
+                                        ];
+                                    @endphp
+
+                                    @foreach($bulanList as $key=>$value)
+                                        <option value="{{ $key }}"
+                                            {{ request('bulan')==$key ? 'selected' : '' }}>
+                                            {{ $value }}
+                                        </option>
+                                    @endforeach
+
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
                                 <label class="form-label">Cari Nama / Kode</label>
 
                                 <input type="text"
@@ -88,7 +124,7 @@
                                     value="{{ request('q') }}">
                             </div>
 
-                            <div class="col-md-3 d-flex align-items-end gap-2">
+                            <div class="col-md-2 d-flex align-items-end gap-2">
 
                                 <button class="btn btn-primary">
                                     <i class="bx bx-search"></i>
@@ -246,23 +282,6 @@
                 </div>
             @endif
 
-            @php
-                $bulan = [
-                    'jan'  => 'Januari',
-                    'feb'  => 'Februari',
-                    'mar'  => 'Maret',
-                    'apr'  => 'April',
-                    'mei'  => 'Mei',
-                    'jun'  => 'Juni',
-                    'jul'  => 'Juli',
-                    'agt'  => 'Agustus',
-                    'sept' => 'September',
-                    'okt'  => 'Oktober',
-                    'nov'  => 'November',
-                    'des'  => 'Desember',
-                ];
-            @endphp
-
             <div class="table-responsive">
                 <table class="table table-bordered table-striped">
                     <thead>
@@ -273,9 +292,13 @@
                         <th>Kode</th>
                         <th>Nama</th>
                         <th>No HP</th>
-                        @foreach($bulan as $field => $label)
-                            <th>{{ $label }}</th>
-                        @endforeach
+                        @if($selectedBulan)
+                            <th>{{ $bulanList[$selectedBulan] }}</th>
+                        @else
+                            @foreach($bulanList as $field => $label)
+                                <th>{{ $label }}</th>
+                            @endforeach
+                        @endif
                     </tr>
                     </thead>
                     <tbody>
@@ -306,37 +329,47 @@
                         <td>{{ $item->nama }}</td>
                         <td>{{ $item->no_hp }}</td>
 
-                        @foreach($bulan as $field => $label)
-
+                        @if($selectedBulan)
                             <td>
-
                                 <div class="d-flex justify-content-between align-items-center">
-
                                     <span>
-                                        {{ $item->$field ? number_format($item->$field) : '-' }}
+                                        {{ $item->bulan ? number_format($item->bulan) : '-' }}
                                     </span>
-
                                     <button
                                         type="button"
                                         class="btn btn-sm btn-outline-primary btn-edit-nominal"
-
                                         data-id="{{ $item->id }}"
-                                        data-bulan="{{ $field }}"
-                                        data-label="{{ $label }}"
-                                        data-nominal="{{ $item->$field }}"
-
+                                        data-bulan="{{ $selectedBulan }}"
+                                        data-label="{{ $bulanList[$selectedBulan] }}"
+                                        data-nominal="{{ $item->bulan }}"
                                         data-bs-toggle="modal"
                                         data-bs-target="#editNominalModal">
-
                                         <i class="bx bx-pencil"></i>
-
                                     </button>
-
                                 </div>
-
                             </td>
-
-                        @endforeach
+                        @else
+                            @foreach($bulanList as $field => $label)
+                                <td>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>
+                                            {{ $item->$field ? number_format($item->$field) : '-' }}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-primary btn-edit-nominal"
+                                            data-id="{{ $item->id }}"
+                                            data-bulan="{{ $field }}"
+                                            data-label="{{ $label }}"
+                                            data-nominal="{{ $item->$field }}"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editNominalModal">
+                                            <i class="bx bx-pencil"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            @endforeach
+                        @endif
                     </tr>
                     @endforeach
                     </tbody>
@@ -406,22 +439,6 @@
                                                         {{ $tahun }}
                                                     </option>
                                                 @endfor
-
-                                            </select>
-
-                                            <select name="bulan"
-                                                    class="form-select"
-                                                    style="width:140px"
-                                                    required>
-
-                                                <option value="semua">Semua Bulan</option>
-
-                                                @foreach($bulan as $key=>$value)
-                                                    <option value="{{ $key }}"
-                                                        {{ request('bulan')==$key ? 'selected' : '' }}>
-                                                        {{ $value }}
-                                                    </option>
-                                                @endforeach
 
                                             </select>
 
