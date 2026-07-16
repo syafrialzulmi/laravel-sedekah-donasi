@@ -87,7 +87,7 @@
                     <i class="bi bi-box-arrow-in-right"></i> Login
                 </a>
             @else
-                <a href="{{ url('/dashboard') }}" class="btn btn-success">
+                <a href="{{ url('/admin') }}" class="btn btn-success">
                     <i class="bi bi-speedometer2"></i> Dashboard
                 </a>
             @endguest
